@@ -11,7 +11,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -104,35 +103,64 @@
             font-size: 0.85rem; display: none; z-index: 20; color: #fff; font-weight: 500; backdrop-filter: blur(10px); letter-spacing: 1px; text-transform: uppercase; text-align: center;
         }
 
-        /* Botão discreto para trocar de perfil se precisar */
         .trocar-perfil {
             position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
             color: var(--prata-escuro); padding: 6px 12px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; z-index: 30;
             text-transform: uppercase; letter-spacing: 0.5px;
         }
 
-        /* === TELA GALERIA === */
+        /* === TELA GALERIA (ESTRUTURA DE ÁLBUNS) === */
         #gallery-screen { padding: 25px 15px; }
         .gallery-header { margin-bottom: 20px; text-align: center; width: 100%; }
         .timer-revelacao { font-size: 0.8rem; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 8px; letter-spacing: 0.5px;}
         
-        .grid-galeria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; padding-bottom: 40px; }
+        /* Lista de Álbuns Individuais (Cards por Convidado) */
+        .lista-albuns { display: flex; flex-direction: column; gap: 12px; width: 100%; padding-bottom: 40px; }
+        .album-card {
+            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px; padding: 18px 20px; display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s ease;
+        }
+        .album-card:active { background: rgba(244, 172, 183, 0.1); border-color: var(--rosa); }
+        .album-info h3 { font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 3px; font-family: 'Montserrat', sans-serif;}
+        .album-info p { font-size: 0.75rem; color: var(--prata-escuro); text-transform: uppercase; letter-spacing: 1px;}
+        .album-arrow { font-size: 1.2rem; color: var(--rosa); }
+
+        /* Grade de Fotos Detalhada de um Álbum Específico */
+        .detalhe-topo { display: flex; align-items: center; margin-bottom: 20px; width: 100%; gap: 15px; }
+        .btn-voltar {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff;
+            padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-family: 'Montserrat', sans-serif;
+        }
+        .grid-fotos-autor { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; padding-bottom: 40px; }
+        
         .foto-card {
             position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; 
             background: #111; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; justify-content: flex-end;
         }
-        .foto-card img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.5s ease; }
+        .foto-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: filter 0.5s ease; z-index: 1; }
         
         .foto-card.bloqueada img { filter: blur(15px) grayscale(30%); }
         .lock-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 2;
         }
         .lock-icon { font-size: 2rem; margin-bottom: 5px; }
-        .foto-autor { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px #000;}
+
+        /* Nome de quem tirou fixo embaixo da foto */
+        .tag-autor-fixa {
+            position: relative; z-index: 3; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            padding: 20px 10px 8px 10px; width: 100%; text-align: center;
+        }
+        .tag-autor-fixa span {
+            font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            color: var(--rosa); background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 10px;
+            border: 1px solid rgba(244,172,183,0.3);
+        }
 
         .foto-actions {
             position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 8px; 
-            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-around; gap: 6px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-around; gap: 6px; z-index: 4;
         }
         .btn-lux {
             background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; 
@@ -159,11 +187,10 @@
 </head>
 <body>
 
-    <!-- 0. PAINEL DE CONFIGURAÇÃO (ADMIN) -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
-            <p>Escolha o dia e horário em que as fotos coletivas serão reveladas para você e para os convidados.</p>
+            <p>Escolha o dia e horário em que os álbuns coletivos serão revelados para você e para os convidados.</p>
             
             <input type="datetime-local" id="data-input" class="date-input">
             <button class="btn-acao btn-rosa" onclick="gerarLink()">Gerar Link para o QR Code</button>
@@ -176,7 +203,6 @@
         </div>
     </div>
 
-    <!-- 1. TELA DE LOGIN DO CONVIDADO -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
@@ -186,7 +212,6 @@
         </div>
     </div>
 
-    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
         <button class="trocar-perfil" onclick="esquecerPerfil()">🔄 Trocar Nome</button>
@@ -197,31 +222,26 @@
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA COLETIVA -->
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
-            <h2 style="font-size: 2.5rem;">Álbum da Festa</h2>
+            <h2 style="font-size: 2.3rem;">Álbuns da Festa</h2>
             <div class="timer-revelacao" id="timer-display">Calculando tempo...</div>
         </div>
-        <div class="grid-galeria" id="grid-fotos">
-            <div class="empty-state">Carregando fotos...</div>
+        <div class="lista-albuns" id="container-albuns">
+            <div class="empty-state">Carregando álbuns...</div>
         </div>
     </div>
 
-    <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
             <span style="font-size: 1.1rem;">📷</span> Câmera
         </div>
         <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">
-            <span style="font-size: 1.1rem;">🔒</span> Galeria
+            <span style="font-size: 1.1rem;">🔒</span> Álbuns
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // CHAVES DO FIREBASE (PROJETO: ana-julia-4539a)
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyBO54dR0ngrdoT2DfjTv1iopt-1iGaG5Zg",
             authDomain: "ana-julia-4539a.firebaseapp.com",
@@ -238,6 +258,7 @@
         let nomeConvidado = "";
         let streamDeVideo = null;
         let timestampRevelacao = 0;
+        let autorSelecionado = null; // Controla qual álbum individual está aberto
 
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
@@ -245,9 +266,6 @@
         const btnCaptura = document.getElementById('btn-tirar-foto');
         let timerInterval = null;
 
-        // ==========================================
-        // CONTROLE DE TELAS E PERFIL PERSISTENTE
-        // ==========================================
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
@@ -258,8 +276,6 @@
                 document.getElementById('admin-screen').classList.add('active');
             } else {
                 timestampRevelacao = new Date(dataParam).getTime();
-                
-                // Verifica se já existe um perfil salvo no celular da pessoa
                 const nomeSalvo = localStorage.getItem('anajulia_convidado_nome');
                 if (nomeSalvo) {
                     nomeConvidado = nomeSalvo;
@@ -267,7 +283,6 @@
                     mudarAba('camera');
                     iniciarEscutaGaleria();
                 } else {
-                    // Se não tem perfil salvo, mostra a tela de login para digitar o nome
                     document.getElementById('login-screen').classList.add('active');
                 }
             }
@@ -286,20 +301,14 @@
 
         function copiarLink() {
             const link = document.getElementById('link-text').innerText;
-            navigator.clipboard.writeText(link).then(() => { 
-                alert("Link copiado com sucesso! Crie o seu QR Code com ele."); 
-            });
+            navigator.clipboard.writeText(link).then(() => { alert("Link copiado!"); });
         }
 
-        // ==========================================
-        // SISTEMA DO CONVIDADO E PERFIL FIXO
-        // ==========================================
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
             if(!nome) { alert("Por favor, digite seu nome!"); return; }
             
             nomeConvidado = nome;
-            // Salva permanentemente no celular para nunca mais pedir
             localStorage.setItem('anajulia_convidado_nome', nomeConvidado);
             
             document.getElementById('login-screen').classList.remove('active');
@@ -311,7 +320,7 @@
         function esquecerPerfil() {
             if(confirm("Deseja alterar o nome associado a este celular?")) {
                 localStorage.removeItem('anajulia_convidado_nome');
-                location.reload(); // Recarrega a página para pedir o nome de novo
+                location.reload();
             }
         }
 
@@ -324,6 +333,7 @@
             if(aba === 'camera') {
                 document.getElementById('camera-screen').classList.add('active');
                 document.getElementById('nav-camera').classList.add('active');
+                autorSelecionado = null; // Reseta o álbum aberto ao voltar pra câmera
                 iniciarCamera();
                 pararContadorTempoReal();
             } else {
@@ -339,7 +349,7 @@
             try {
                 streamDeVideo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
                 video.srcObject = streamDeVideo;
-            } catch (err) { alert("Erro na câmera. Verifique as permissões do navegador."); }
+            } catch (err) { alert("Erro na câmera."); }
         }
 
         function pararCamera() {
@@ -384,9 +394,6 @@
             });
         }
 
-        // ==========================================
-        // CONTAGEM REGRESSIVA EM TEMPO REAL
-        // ==========================================
         function checarRevelacao() {
             const agora = new Date().getTime();
             const faltam = timestampRevelacao - agora;
@@ -394,10 +401,10 @@
             const menuIcon = document.getElementById('nav-galeria');
 
             if (faltam <= 0) {
-                timerEl.innerText = "✨ ÁLBUM REVELADO ✨";
+                timerEl.innerText = "✨ ÁLBUNS REVELADOS ✨";
                 timerEl.style.borderColor = "#4caf50"; 
                 timerEl.style.color = "#4caf50";
-                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🖼️</span> Galeria';
+                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🖼️</span> Álbuns';
                 return true; 
             } else {
                 const horas = Math.floor(faltam / (1000 * 60 * 60));
@@ -405,7 +412,7 @@
                 const seg = Math.floor((faltam % (1000 * 60)) / 1000);
                 
                 timerEl.innerText = `Revelação em: ${horas}h ${min}m ${seg}s 🔒`;
-                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🔒</span> Secreta';
+                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🔒</span> Secreto';
                 return false; 
             }
         }
@@ -440,31 +447,82 @@
                 });
         }
 
+        // ==========================================
+        // AGRUPAMENTO E RENDERIZAÇÃO POR ÁLBUNS DE AUTOR
+        // ==========================================
         function atualizarInterfaceGaleria() {
             const revelado = checarRevelacao();
-            const grid = document.getElementById('grid-fotos');
-            grid.innerHTML = ''; 
+            const container = document.getElementById('container-albuns');
+            container.innerHTML = ''; 
             
             if (cacheFotos.length === 0) {
-                grid.innerHTML = '<div class="empty-state">Ninguém tirou foto ainda.<br>Seja o primeiro!</div>';
+                container.innerHTML = '<div class="empty-state">Nenhuma foto tirada ainda.<br>Seja o primeiro!</div>';
                 return;
             }
 
-            cacheFotos.forEach((dados, index) => {
-                const div = document.createElement('div');
-                div.className = revelado ? 'foto-card' : 'foto-card bloqueada';
-                const nomeArquivo = `15Anos_Por_${dados.autor.replace(/\s+/g, '')}_${index}.jpg`;
+            // Se o usuário entrou dentro do álbum de uma pessoa específica
+            if (autorSelecionado !== null) {
+                renderizarDetalhesAlbum(autorSelecionado, revelado);
+                return;
+            }
+
+            // Caso contrário, agrupa todas as fotos por nome do autor
+            const albunsPorAutor = {};
+            cacheFotos.forEach(foto => {
+                const autor = foto.autor || "Convidado";
+                if (!albunsPorAutor[autor]) {
+                    albunsPorAutor[autor] = [];
+                }
+                albunsPorAutor[autor].push(foto);
+            });
+
+            // Cria um card/pasta para cada convidado que tirou foto
+            for (const [autor, fotos] of Object.entries(albunsPorAutor)) {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                card.onclick = () => { autorSelecionado = autor; atualizarInterfaceGaleria(); };
                 
-                let htmlCard = `<img src="${dados.imagemTexto}" alt="Foto">`;
+                card.innerHTML = `
+                    <div class="album-info">
+                        <h3>Álbum de ${autor}</h3>
+                        <p>${fotos.length} ${fotos.length === 1 ? 'foto registrada' : 'fotos registradas'}</p>
+                    </div>
+                    <div class="album-arrow">${revelado ? '📂' : '🔒'}</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        // Mostra as fotos detalhadas ao abrir o álbum de alguém
+        function renderizarDetalhesAlbum(autor, revelado) {
+            const container = document.getElementById('container-albuns');
+            const fotosDoAutor = cacheFotos.filter(f => (f.autor || "Convidado") === autor);
+
+            let html = `
+                <div class="detalhe-topo">
+                    <button class="btn-voltar" onclick="autorSelecionado = null; atualizarInterfaceGaleria();">← Voltar aos Álbuns</button>
+                    <h3 style="font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--rosa);">Álbum de ${autor}</h3>
+                </div>
+                <div class="grid-fotos-autor">
+            `;
+
+            fotosDoAutor.forEach((dados, index) => {
+                const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
+                const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
+                
+                html += `<div class="${classeBloqueio}">`;
+                html += `<img src="${dados.imagemTexto}" alt="Foto">`;
                 
                 if (!revelado) {
-                    htmlCard += `
+                    html += `
                     <div class="lock-overlay">
                         <div class="lock-icon">🔒</div>
-                        <div class="foto-autor">Por: ${dados.autor}</div>
                     </div>`;
                 } else {
-                    htmlCard += `
+                    html += `
+                    <div class="tag-autor-fixa">
+                        <span>Por: ${autor}</span>
+                    </div>
                     <div class="foto-actions">
                         <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
                             <span>⬇️</span> Baixar
@@ -474,53 +532,33 @@
                         </button>
                     </div>`;
                 }
-                div.innerHTML = htmlCard;
-                grid.appendChild(div);
+                html += `</div>`;
             });
+
+            html += `</div>`;
+            container.innerHTML = html;
         }
 
         function baixarFotoGaleria(dataUrl, nomeArquivo) {
-            fetch(dataUrl)
-                .then(res => res.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = nomeArquivo;
-                    document.body.appendChild(link);
-                    link.click();
-                    setTimeout(() => {
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(link);
-                    }, 100);
-                })
-                .catch(() => {
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = nomeArquivo;
-                    a.target = '_blank';
-                    a.click();
-                });
+            fetch(dataUrl).then(res => res.blob()).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url; link.download = nomeArquivo;
+                document.body.appendChild(link); link.click();
+                setTimeout(() => { window.URL.revokeObjectURL(url); document.body.removeChild(link); }, 100);
+            }).catch(() => {
+                const a = document.createElement('a'); a.href = dataUrl; a.download = nomeArquivo; a.target = '_blank'; a.click();
+            });
         }
 
         async function compartilharFoto(dataUrl, nomeArquivo) {
             try {
-                const res = await fetch(dataUrl); 
-                const blob = await res.blob();
+                const res = await fetch(dataUrl); const blob = await res.blob();
                 const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
-                
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ 
-                        files: [file], 
-                        title: '15 Anos Ana Julia', 
-                        text: 'Olha que foto sensacional da festa! ✨' 
-                    });
-                } else { 
-                    baixarFotoGaleria(dataUrl, nomeArquivo);
-                }
-            } catch (error) { 
-                console.log('Compartilhamento cancelado ou indisponível'); 
-            }
+                    await navigator.share({ files: [file], title: '15 Anos Ana Julia', text: 'Olha que foto sensacional da festa! ✨' });
+                } else { baixarFotoGaleria(dataUrl, nomeArquivo); }
+            } catch (error) { console.log('Compartilhamento cancelado'); }
         }
     </script>
 </body>
