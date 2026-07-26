@@ -5,28 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Câmera - 15 Anos Ana Julia</title>
     
-    <!-- Meta tags básicas para ficar bonito no WhatsApp -->
-    <meta property="og:title" content="Nossa Câmera Exclusiva 📸">
-    <meta property="og:description" content="Tire fotos da festa na sua perspectiva. As fotos só serão reveladas amanhã!">
+    <meta property="og:title" content="Câmera Exclusiva 📸">
+    <meta property="og:description" content="Registre os melhores momentos da festa e compartilhe!">
     <meta property="og:type" content="website">
 
-    <!-- Fontes -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK (Versão Compatível) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --azul-escuro: #0a1128;
-            --azul-fundo: #070c1d;
+            --azul-fundo: #040814;
             --prata: #e0e0e0;
+            --prata-escuro: #888888;
             --rosa: #f4acb7;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background-color: var(--azul-fundo);
@@ -36,106 +30,143 @@
             flex-direction: column;
             height: 100dvh;
             overflow: hidden;
+            background-image: radial-gradient(circle at top, #0a1128 0%, #040814 100%);
         }
 
         h1, h2 { font-family: 'Great Vibes', cursive; color: var(--rosa); text-align: center; font-weight: normal;}
         
-        /* === TELAS === */
+        /* === ESTRUTURA DE TELAS === */
         .screen {
             display: none;
-            flex: 1;
             width: 100%;
-            height: calc(100% - 70px); /* Desconta o menu inferior */
-            overflow-y: auto;
+            height: calc(100dvh - 75px); /* Trava exata descontando o menu inferior */
             position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
         .screen.active { display: flex; flex-direction: column; align-items: center; }
 
-        /* === TELA DE LOGIN === */
+        /* === TELA DE LOGIN (LUXO) === */
         #login-screen { justify-content: center; padding: 20px; }
         .login-box {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--prata);
-            padding: 30px 20px; border-radius: 20px; backdrop-filter: blur(10px);
-            text-align: center; width: 100%; max-width: 350px;
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(224, 224, 224, 0.15);
+            padding: 40px 25px; 
+            border-radius: 24px; 
+            backdrop-filter: blur(15px);
+            text-align: center; 
+            width: 100%; 
+            max-width: 360px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
-        .login-box input {
-            width: 100%; padding: 15px; margin: 20px 0; border-radius: 10px;
-            border: 1px solid var(--prata); background: rgba(0,0,0,0.5);
-            color: #fff; font-size: 1rem; text-align: center; outline: none;
+        .login-title { font-size: 3.5rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(244, 172, 183, 0.3); }
+        .login-subtitle { font-size: 0.85rem; color: var(--prata-escuro); margin-bottom: 30px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase;}
+        
+        .input-group {
+            display: flex; gap: 10px; margin-bottom: 25px;
         }
+        .lux-input {
+            width: 100%; padding: 16px; border-radius: 12px;
+            border: 1px solid rgba(224, 224, 224, 0.2); 
+            background: rgba(0,0,0,0.4);
+            color: #fff; font-size: 0.95rem; text-align: center; 
+            outline: none; transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .lux-input::placeholder { color: rgba(224, 224, 224, 0.4); }
+        .lux-input:focus { border-color: var(--rosa); box-shadow: 0 0 15px rgba(244, 172, 183, 0.2); }
+
         .btn-acao {
-            background: linear-gradient(135deg, #ffffff 0%, #a8a8a8 100%);
-            color: var(--azul-escuro); border: none; padding: 15px 30px;
-            border-radius: 30px; font-size: 1rem; font-weight: 600;
-            cursor: pointer; width: 100%; text-transform: uppercase;
+            background: linear-gradient(135deg, var(--prata) 0%, #999 100%);
+            color: var(--azul-fundo); border: none; padding: 16px 30px;
+            border-radius: 30px; font-size: 0.9rem; font-weight: 600;
+            cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1); transition: all 0.3s ease;
         }
+        .btn-acao:active { transform: scale(0.97); }
 
         /* === TELA DA CÂMERA === */
         #camera-screen { background: #000; justify-content: center; overflow: hidden; }
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
-        .capture-btn {
-            position: absolute; bottom: 30px; width: 75px; height: 75px;
-            background: rgba(255, 255, 255, 0.3); border: 4px solid #fff;
-            border-radius: 50%; cursor: pointer; z-index: 10;
+        
+        /* Botão corrigido: agora fica sempre seguro acima do menu */
+        .capture-wrapper {
+            position: absolute;
+            bottom: 30px; 
+            left: 0; width: 100%;
+            display: flex; justify-content: center;
+            z-index: 10;
         }
-        .capture-btn:active { background: #fff; }
+        .capture-btn {
+            width: 75px; height: 75px;
+            background: rgba(255, 255, 255, 0.2); border: 3px solid #fff;
+            border-radius: 50%; cursor: pointer; backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+        }
+        .capture-btn:active { background: #fff; transform: scale(0.9); }
+        
+        /* Notificação chique */
         .status-toast {
-            position: absolute; top: 20px; background: rgba(10, 17, 40, 0.9);
-            padding: 12px 25px; border-radius: 30px; border: 1px solid var(--rosa);
-            font-size: 0.9rem; display: none; z-index: 20; color: #fff; font-weight: bold;
+            position: absolute; top: 20px; background: rgba(4, 8, 20, 0.85);
+            padding: 12px 25px; border-radius: 30px; border: 1px solid var(--prata);
+            font-size: 0.85rem; display: none; z-index: 20; color: #fff; 
+            font-weight: 500; backdrop-filter: blur(10px); letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         /* === TELA DA GALERIA === */
-        #gallery-screen { padding: 20px; justify-content: flex-start; }
-        .gallery-header { margin-bottom: 20px; text-align: center; width: 100%; }
-        .timer-revelacao { font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 10px;}
+        #gallery-screen { padding: 30px 20px; justify-content: flex-start; }
+        .gallery-header { margin-bottom: 25px; text-align: center; width: 100%; }
+        .gallery-desc { font-size: 0.8rem; color: var(--prata-escuro); margin-top: 5px; }
         
         .grid-galeria {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             width: 100%;
-            padding-bottom: 30px;
+            padding-bottom: 40px;
         }
+        
         .foto-card {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 3/4;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #111;
+            position: relative; width: 100%; aspect-ratio: 3/4;
+            border-radius: 16px; overflow: hidden; background: #111;
             border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .foto-card img {
-            width: 100%; height: 100%; object-fit: cover;
-            transition: filter 0.5s ease;
+        .foto-card img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* Botões de Ação na Foto */
+        .foto-actions {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 15px 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex; justify-content: space-around;
         }
-        /* Efeito de cadeado e borrão */
-        .foto-card.bloqueada img { filter: blur(15px) grayscale(50%); }
-        .lock-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            background: rgba(0,0,0,0.3); z-index: 2;
+        .btn-icon {
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; width: 40px; height: 40px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; backdrop-filter: blur(5px); text-decoration: none;
+            font-size: 1.2rem; transition: background 0.3s ease;
         }
-        .lock-icon { font-size: 2rem; margin-bottom: 5px; }
-        .foto-autor { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px #000;}
+        .btn-icon:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa);}
+
+        .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
         /* === MENU INFERIOR === */
         .bottom-nav {
-            height: 70px; background: rgba(7, 12, 29, 0.95);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around; align-items: center;
-            position: fixed; bottom: 0; width: 100%; z-index: 100;
-            backdrop-filter: blur(10px);
+            height: 75px; 
+            background: rgba(4, 8, 20, 0.95);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: none; justify-content: space-around; align-items: center;
+            width: 100%; z-index: 100; backdrop-filter: blur(15px);
         }
         .nav-item {
-            color: var(--prata); font-size: 0.8rem; text-transform: uppercase;
-            font-weight: 600; cursor: pointer; padding: 10px 20px; border-radius: 20px;
+            color: var(--prata-escuro); font-size: 0.75rem; text-transform: uppercase;
+            font-weight: 600; cursor: pointer; padding: 12px 25px; border-radius: 30px;
+            letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
-        .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); }
+        .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); border: 1px solid rgba(244, 172, 183, 0.2);}
         
-        /* Esconde o menu na tela de login */
-        #bottom-menu { display: none; }
     </style>
 </head>
 <body>
@@ -143,9 +174,14 @@
     <!-- 1. TELA DE LOGIN -->
     <div id="login-screen" class="screen active">
         <div class="login-box">
-            <h1 style="font-size: 3rem;">Ana Julia 15</h1>
-            <p style="font-size: 0.9rem; margin-top: 10px;">Registre os momentos na sua perspectiva!</p>
-            <input type="text" id="nome-convidado" placeholder="Digite seu nome" autocomplete="off">
+            <h1 class="login-title">Ana Julia</h1>
+            <p class="login-subtitle">Câmera do Convidado</p>
+            
+            <div class="input-group">
+                <input type="text" id="input-nome" class="lux-input" placeholder="Nome" autocomplete="off">
+                <input type="text" id="input-sobrenome" class="lux-input" placeholder="Sobrenome" autocomplete="off">
+            </div>
+            
             <button class="btn-acao" onclick="entrarNoSistema()">Ligar Câmera</button>
         </div>
     </div>
@@ -154,66 +190,55 @@
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
         <video id="video-preview" autoplay playsinline></video>
-        <button class="capture-btn" onclick="tirarFoto()"></button>
+        
+        <div class="capture-wrapper">
+            <button class="capture-btn" onclick="tirarFoto()"></button>
+        </div>
+        
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA -->
+    <!-- 3. TELA DA GALERIA PESSOAL -->
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
-            <h2 style="font-size: 2.5rem;">Álbum Exclusivo</h2>
-            <div class="timer-revelacao" id="timer-display">Calculando...</div>
+            <h2 style="font-size: 2.8rem;">Suas Fotos</h2>
+            <p class="gallery-desc">Salve ou compartilhe seus cliques da festa!</p>
         </div>
         <div class="grid-galeria" id="grid-fotos">
-            <!-- As fotos vão aparecer aqui via JavaScript -->
+            <!-- As fotos aparecem aqui -->
         </div>
     </div>
 
     <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
-        <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">📸 Câmera</div>
-        <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">🖼️ Galeria</div>
+        <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
+            <span style="font-size: 1.1rem;">📷</span> Câmera
+        </div>
+        <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">
+            <span style="font-size: 1.1rem;">🖼️</span> Galeria
+        </div>
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURAÇÃO DO FIREBASE
-        // Substitua pelas chaves do seu projeto Firebase
-        // ==========================================
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_PROJETO.firebaseapp.com",
-            projectId: "SEU_PROJETO",
-            storageBucket: "SEU_PROJETO.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        // Variáveis de Controle
-        let nomeConvidado = "";
+        // Variáveis Locais
+        let nomeCompleto = "";
         let streamDeVideo = null;
+        let minhasCapturas = []; // Array que guarda as fotos tiradas
+
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
         const statusToast = document.getElementById('status-toast');
         
         // ==========================================
-        // REGRA DE REVELAÇÃO (DATA E HORA)
-        // Está programado para 17 de Outubro de 2026 às 12h00
-        // ==========================================
-        const dataRevelacao = new Date('2026-10-17T12:00:00').getTime();
-
-        // ==========================================
         // LÓGICA DE NAVEGAÇÃO
         // ==========================================
         function entrarNoSistema() {
-            const input = document.getElementById('nome-convidado').value.trim();
-            if(!input) { alert("Por favor, informe seu nome!"); return; }
+            const nome = document.getElementById('input-nome').value.trim();
+            const sobrenome = document.getElementById('input-sobrenome').value.trim();
             
-            nomeConvidado = input;
+            if(!nome) { alert("Por favor, informe pelo menos o seu nome!"); return; }
+            
+            nomeCompleto = `${nome} ${sobrenome}`.trim();
             
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('bottom-menu').style.display = 'flex';
@@ -229,22 +254,22 @@
             if(aba === 'camera') {
                 document.getElementById('camera-screen').classList.add('active');
                 document.getElementById('nav-camera').classList.add('active');
-                iniciarCamera(); // Liga a câmera ao entrar na aba
+                iniciarCamera();
             } else {
                 document.getElementById('gallery-screen').classList.add('active');
                 document.getElementById('nav-galeria').classList.add('active');
-                pararCamera(); // Desliga a câmera para economizar bateria
-                carregarGaleria();
+                pararCamera();
+                renderizarGaleria();
             }
         }
 
         // ==========================================
-        // CÂMERA E CAPTURA
+        // CÂMERA E CAPTURA (SALVANDO LOCAL)
         // ==========================================
         async function iniciarCamera() {
             try {
                 streamDeVideo = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' }, // Tenta forçar a câmera traseira
+                    video: { facingMode: 'environment' }, 
                     audio: false
                 });
                 video.srcObject = streamDeVideo;
@@ -259,114 +284,81 @@
             }
         }
 
-        function mostrarToast(msg, cor = 'var(--rosa)') {
+        function mostrarToast(msg) {
             statusToast.innerText = msg;
-            statusToast.style.borderColor = cor;
             statusToast.style.display = 'block';
-            setTimeout(() => { statusToast.style.display = 'none'; }, 3000);
+            setTimeout(() => { statusToast.style.display = 'none'; }, 2500);
         }
 
         function tirarFoto() {
-            mostrarToast("Enviando foto... ⏳");
-            
+            // Efeito visual de "piscar" a tela
+            video.style.opacity = '0.3';
+            setTimeout(() => { video.style.opacity = '1'; }, 150);
+
+            // Captura o quadro
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            canvas.toBlob(function(blob) {
-                const idUnico = new Date().getTime();
-                const nomeArquivo = `fotos/${idUnico}.jpg`;
-                const ref = storage.ref().child(nomeArquivo);
+            // Converte para Base64 (salva na memória do navegador temporariamente)
+            const fotoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            minhasCapturas.unshift(fotoDataUrl); // Adiciona no início da lista
 
-                // Sobe a imagem para o Storage
-                ref.put(blob).then((snapshot) => {
-                    // Pega o link da imagem
-                    snapshot.ref.getDownloadURL().then((urlImagem) => {
-                        // Salva os dados no banco de dados Firestore
-                        db.collection("album_anajulia").add({
-                            url: urlImagem,
-                            autor: nomeConvidado,
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        }).then(() => {
-                            mostrarToast("Foto salva no álbum! ✨", "#4caf50");
-                        });
-                    });
-                }).catch((erro) => {
-                    mostrarToast("Erro ao enviar.", "red");
-                });
-            }, 'image/jpeg', 0.8);
+            mostrarToast("FOTO SALVA NA GALERIA!");
         }
 
         // ==========================================
-        // GALERIA E MÁGICA DA REVELAÇÃO
+        // GALERIA (RENDERIZAR, BAIXAR E COMPARTILHAR)
         // ==========================================
-        function atualizarTimer() {
-            const agora = new Date().getTime();
-            const faltam = dataRevelacao - agora;
-            const timerEl = document.getElementById('timer-display');
-
-            if (faltam <= 0) {
-                timerEl.innerText = "✨ Álbum Revelado! ✨";
-                timerEl.style.borderColor = "#4caf50";
-                timerEl.style.color = "#4caf50";
-                return true; // Já revelou
-            } else {
-                const horas = Math.floor(faltam / (1000 * 60 * 60));
-                const min = Math.floor((faltam % (1000 * 60 * 60)) / (1000 * 60));
-                timerEl.innerText = `Revelação em: ${horas}h e ${min}m 🔒`;
-                return false; // Ainda bloqueado
-            }
-        }
-
-        function carregarGaleria() {
-            const fotosReveladas = atualizarTimer();
+        function renderizarGaleria() {
             const grid = document.getElementById('grid-fotos');
-            grid.innerHTML = '<p style="grid-column: span 2; text-align: center;">Carregando...</p>';
+            grid.innerHTML = ''; 
+            
+            if (minhasCapturas.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Você ainda não tirou nenhuma foto. Volte para a câmera!</div>';
+                return;
+            }
 
-            // Puxa as fotos do banco de dados ordenadas da mais recente para a mais antiga
-            db.collection("album_anajulia").orderBy("timestamp", "desc").get().then((querySnapshot) => {
-                grid.innerHTML = ''; // Limpa o carregando
+            minhasCapturas.forEach((fotoBase64, index) => {
+                const div = document.createElement('div');
+                div.className = 'foto-card';
                 
-                if (querySnapshot.empty) {
-                    grid.innerHTML = '<p style="grid-column: span 2; text-align: center;">Nenhuma foto tirada ainda.</p>';
-                    return;
-                }
-
-                querySnapshot.forEach((doc) => {
-                    const dados = doc.data();
-                    
-                    // Monta o Card da Foto
-                    const div = document.createElement('div');
-                    div.className = fotosReveladas ? 'foto-card' : 'foto-card bloqueada';
-                    
-                    let htmlCard = `<img src="${dados.url}" alt="Foto">`;
-                    
-                    // Se não estiver revelado, coloca o cadeado e o nome de quem tirou por cima
-                    if (!fotosReveladas) {
-                        htmlCard += `
-                        <div class="lock-overlay">
-                            <div class="lock-icon">🔒</div>
-                            <div class="foto-autor">Por: ${dados.autor}</div>
-                        </div>`;
-                    }
-                    
-                    div.innerHTML = htmlCard;
-                    grid.appendChild(div);
-                });
+                // Nome do arquivo para download
+                const nomeArquivo = `AnaJulia15_${nomeCompleto.replace(/\s+/g, '')}_${index}.jpg`;
+                
+                div.innerHTML = `
+                    <img src="${fotoBase64}" alt="Minha Foto">
+                    <div class="foto-actions">
+                        <a href="${fotoBase64}" download="${nomeArquivo}" class="btn-icon" title="Baixar Foto">⬇️</a>
+                        <div class="btn-icon" onclick="compartilharFoto('${fotoBase64}', '${nomeArquivo}')" title="Compartilhar">📤</div>
+                    </div>
+                `;
+                grid.appendChild(div);
             });
         }
 
-        // Atualiza o reloginho a cada 1 minuto se estiver na aba da galeria
-        setInterval(() => {
-            if(document.getElementById('gallery-screen').classList.contains('active')) {
-                const agoraRevelou = atualizarTimer();
-                // Se a contagem zerou exatamente agora enquanto o cara tá com a tela aberta, recarrega as imagens pra tirar o borrão
-                if(agoraRevelou && document.querySelector('.foto-card.bloqueada')) {
-                    carregarGaleria();
-                }
-            }
-        }, 60000);
+        // Função de Compartilhar Nativa do Celular (WhatsApp, Instagram, etc)
+        async function compartilharFoto(dataUrl, nomeArquivo) {
+            try {
+                // Converte o Base64 de volta para um arquivo físico que o WhatsApp entenda
+                const res = await fetch(dataUrl);
+                const blob = await res.blob();
+                const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
 
+                // Verifica se o celular suporta compartilhar arquivos
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: '15 Anos Ana Julia',
+                        text: 'Olha o clique que eu fiz nos 15 anos da Ana Julia! ✨'
+                    });
+                } else {
+                    alert("Seu navegador não suporta compartilhamento direto. Use o botão de baixar e envie pela sua galeria!");
+                }
+            } catch (error) {
+                console.log('Compartilhamento cancelado ou falhou', error);
+            }
+        }
     </script>
 </body>
 </html>
