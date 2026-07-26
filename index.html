@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Câmera da Festa - Ana Julia</title>
+    <title>Câmera - 15 Anos Ana Julia</title>
     
     <meta property="og:title" content="Câmera Exclusiva 📸">
-    <meta property="og:description" content="Seja o fotógrafo da festa! As fotos serão reveladas na data escolhida.">
+    <meta property="og:description" content="Registre os momentos na sua perspectiva!">
     <meta property="og:type" content="website">
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (Apenas Firestore) -->
+    <!-- Firebase SDKs (Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -34,35 +34,43 @@
 
         h1, h2 { font-family: 'Great Vibes', cursive; color: var(--rosa); text-align: center; font-weight: normal;}
         
-        .screen { display: none; width: 100%; height: calc(100dvh - 75px); position: relative; overflow-y: auto; overflow-x: hidden; }
-        .screen.active { display: flex; flex-direction: column; align-items: center; }
+        /* Controle absoluto de telas (Garante que só uma aparece por vez) */
+        .screen { display: none; width: 100%; height: 100dvh; position: absolute; top: 0; left: 0; overflow-y: auto; }
+        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+        /* Tela de Câmera e Galeria precisam descontar o menu inferior */
+        #camera-screen.active, #gallery-screen.active { 
+            height: calc(100dvh - 75px); 
+            justify-content: flex-start;
+            position: relative;
+        }
+        #camera-screen.active { justify-content: center; overflow: hidden; }
 
         /* === TELA ADMIN (GERAR LINK) === */
-        #admin-screen { height: 100dvh; justify-content: center; padding: 20px; z-index: 200; display: flex; }
         .admin-box {
             background: rgba(10, 17, 40, 0.95); border: 1px solid var(--rosa);
-            padding: 35px 25px; border-radius: 24px; text-align: center; width: 100%; max-width: 380px;
+            padding: 30px 20px; border-radius: 24px; text-align: center; width: 90%; max-width: 380px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+            margin: auto; max-height: 90vh; overflow-y: auto;
         }
         .admin-box h2 { font-size: 3rem; margin-bottom: 5px; }
-        .admin-box p { font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; color: var(--prata-escuro);}
+        .admin-box p { font-size: 0.85rem; margin-bottom: 20px; line-height: 1.5; color: var(--prata-escuro);}
         
         .date-input {
-            width: 100%; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 20px;
             border: 1px solid rgba(224, 224, 224, 0.2); background: rgba(0,0,0,0.5); color: #fff;
-            font-family: 'Montserrat', sans-serif; outline: none; text-align: center; font-size: 1rem;
+            font-family: 'Montserrat', sans-serif; outline: none; text-align: center; font-size: 0.95rem;
         }
         .date-input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
 
-        #link-gerado-container { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .link-text { font-size: 0.75rem; background: #000; padding: 12px; border-radius: 8px; word-break: break-all; color: var(--rosa); margin-bottom: 15px; border: 1px dashed rgba(244, 172, 183, 0.3);}
+        #link-gerado-container { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .link-text { font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px; word-break: break-all; color: var(--rosa); margin-bottom: 12px; border: 1px dashed rgba(244, 172, 183, 0.3);}
 
-        /* === TELA LOGIN === */
-        #login-screen { justify-content: center; padding: 20px; }
+        /* === TELA LOGIN CONVIDADO === */
         .login-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(224, 224, 224, 0.15);
             padding: 40px 25px; border-radius: 24px; backdrop-filter: blur(15px);
-            text-align: center; width: 100%; max-width: 360px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center; width: 90%; max-width: 360px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .login-title { font-size: 3.5rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(244, 172, 183, 0.3); }
         .login-subtitle { font-size: 0.85rem; color: var(--prata-escuro); margin-bottom: 30px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase;}
@@ -77,7 +85,7 @@
 
         .btn-acao {
             background: linear-gradient(135deg, var(--prata) 0%, #999 100%); color: var(--azul-fundo);
-            border: none; padding: 16px 30px; border-radius: 30px; font-size: 0.9rem; font-weight: 600;
+            border: none; padding: 15px 30px; border-radius: 30px; font-size: 0.85rem; font-weight: 600;
             cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px;
             box-shadow: 0 5px 15px rgba(255,255,255,0.1); transition: all 0.3s ease;
         }
@@ -85,9 +93,7 @@
         .btn-rosa { background: var(--rosa); color: #000; }
 
         /* === TELA CÂMERA === */
-        #camera-screen { background: #000; justify-content: center; overflow: hidden; }
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
-        
         .capture-wrapper { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 10; }
         .capture-btn {
             width: 75px; height: 75px; background: rgba(255, 255, 255, 0.2); border: 3px solid #fff;
@@ -101,7 +107,7 @@
         }
 
         /* === TELA GALERIA === */
-        #gallery-screen { padding: 30px 20px; justify-content: flex-start; }
+        #gallery-screen { padding: 30px 20px; }
         .gallery-header { margin-bottom: 25px; text-align: center; width: 100%; }
         .timer-revelacao { font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 10px; }
         
@@ -134,13 +140,13 @@
         .bottom-nav {
             height: 75px; background: rgba(4, 8, 20, 0.95); border-top: 1px solid rgba(255,255,255,0.08);
             display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(15px);
+            position: fixed; bottom: 0; left: 0;
         }
         .nav-item {
             color: var(--prata-escuro); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; cursor: pointer; 
             padding: 12px 25px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
         .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); border: 1px solid rgba(244, 172, 183, 0.2);}
-        
     </style>
 </head>
 <body>
@@ -149,7 +155,7 @@
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
-            <p>Escolha o dia e horário em que as fotos coletivas serão reveladas para os convidados.</p>
+            <p>Escolha o dia e horário em que as fotos coletivas serão reveladas para você e para os convidados.</p>
             
             <input type="datetime-local" id="data-input" class="date-input">
             <button class="btn-acao btn-rosa" onclick="gerarLink()">Gerar Link para o QR Code</button>
@@ -166,7 +172,7 @@
     <div id="login-screen" class="screen">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
-            <p class="login-subtitle">Câmera Coletiva</p>
+            <p class="login-subtitle">Registre os momentos na sua perspectiva!</p>
             <input type="text" id="input-nome" class="lux-input" placeholder="Seu nome" autocomplete="off">
             <button class="btn-acao" onclick="entrarNoSistema()">Ligar Câmera</button>
         </div>
@@ -220,7 +226,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // Variáveis de Controle
         let nomeConvidado = "";
         let streamDeVideo = null;
         let timestampRevelacao = 0;
@@ -229,20 +234,21 @@
         const canvas = document.getElementById('canvas-escondido');
         const statusToast = document.getElementById('status-toast');
         const btnCaptura = document.getElementById('btn-tirar-foto');
-        let galeriaEmTempoReal = null;
 
         // ==========================================
-        // LEITURA DA URL E DEFINIÇÃO DE TELA
+        // CONTROLE DE TELAS POR URL
         // ==========================================
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
 
+            document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+
             if (!dataParam) {
-                // Sem parâmetro de data = Painel Administrativo da Ana Julia/GP Tech
+                // Sem data na URL = Abre painel admin isolado
                 document.getElementById('admin-screen').classList.add('active');
             } else {
-                // Com parâmetro = Convidado escaneou o QR Code
+                // Com data na URL = Vai direto para o login do convidado
                 timestampRevelacao = new Date(dataParam).getTime();
                 document.getElementById('login-screen').classList.add('active');
             }
@@ -267,7 +273,7 @@
         }
 
         // ==========================================
-        // NAVEGAÇÃO E SISTEMA DO CONVIDADO
+        // SISTEMA DO CONVIDADO
         // ==========================================
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
