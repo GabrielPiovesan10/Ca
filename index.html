@@ -95,16 +95,19 @@
         /* === TELA CÂMERA === */
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Botão de Flash Chique no Topo */
-        .flash-btn {
+        /* Controles Superiores da Câmera (Flash e Virar Câmera) */
+        .camera-controls-top {
             position: absolute; top: 20px; right: 20px;
+            display: flex; gap: 10px; z-index: 30;
+        }
+        .camera-btn-top {
             background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff; width: 45px; height: 45px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            cursor: pointer; backdrop-filter: blur(10px); z-index: 30; font-size: 1.2rem;
+            cursor: pointer; backdrop-filter: blur(10px); font-size: 1.2rem;
             transition: all 0.2s ease;
         }
-        .flash-btn.ativo { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); }
+        .camera-btn-top.ativo { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); }
 
         .capture-wrapper { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 10; }
         .capture-btn {
@@ -140,7 +143,6 @@
             padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-family: 'Montserrat', sans-serif;
         }
         
-        /* Título do Álbum Individual com fonte limpa e elegante (Montserrat em negrito) */
         .titulo-album-autor {
             font-family: 'Montserrat', sans-serif;
             font-size: 1.5rem;
@@ -155,7 +157,7 @@
         .foto-card {
             position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; 
             background: #111; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            display: flex; flex-direction: column; justify-content: flex-end;
+            display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer;
         }
         .foto-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: filter 0.5s ease; z-index: 1; }
         
@@ -165,7 +167,6 @@
         }
         .lock-icon { font-size: 2rem; margin-bottom: 5px; }
 
-        /* Botões Compactos com Ícones Vetoriais Profissionais (SVG) */
         .foto-actions {
             position: absolute; bottom: 0; left: 0; width: 100%; padding: 6px 4px; 
             background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-around; gap: 4px; z-index: 4;
@@ -179,6 +180,20 @@
         }
         .btn-lux svg { width: 12px; height: 12px; fill: currentColor; }
         .btn-lux:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); transform: scale(0.95); }
+
+        /* === LIGHTBOX / TELA CHEIA DA FOTO === */
+        #lightbox-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background: rgba(0, 0, 0, 0.95); z-index: 1000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            padding: 20px; backdrop-filter: blur(15px);
+        }
+        #lightbox-modal.active { display: flex; }
+        #lightbox-img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 10px; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        .lightbox-close {
+            position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.2); border: none; color: #fff;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
 
         .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
@@ -232,9 +247,13 @@
     <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
-        <!-- Botão de Flash -->
-        <button class="flash-btn" id="btn-flash" onclick="toggleFlash()" title="Ativar Flash">⚡</button>
         
+        <!-- Controles Superiores (Flash e Alternar Câmera) -->
+        <div class="camera-controls-top">
+            <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">🔄</button>
+            <button class="camera-btn-top" id="btn-flash" onclick="toggleFlash()" title="Ativar Flash">⚡</button>
+        </div>
+
         <video id="video-preview" autoplay playsinline></video>
         <div class="capture-wrapper">
             <button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button>
@@ -251,6 +270,12 @@
         <div class="lista-albuns" id="container-albuns">
             <div class="empty-state">Carregando álbuns...</div>
         </div>
+    </div>
+
+    <!-- MODAL DE TELA CHEIA (LIGHTBOX) -->
+    <div id="lightbox-modal" onclick="fecharLightbox(event)">
+        <button class="lightbox-close" onclick="fecharLightbox(event)">✕</button>
+        <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
     <!-- MENU INFERIOR -->
@@ -281,6 +306,7 @@
         let streamDeVideo = null;
         let trackDeVideo = null;
         let flashLigado = false;
+        let usandoCameraFrontal = false;
         let timestampRevelacao = 0;
         let autorSelecionado = null;
 
@@ -289,6 +315,7 @@
         const statusToast = document.getElementById('status-toast');
         const btnCaptura = document.getElementById('btn-tirar-foto');
         const btnFlash = document.getElementById('btn-flash');
+        const btnSwitch = document.getElementById('btn-camera-switch');
         let timerInterval = null;
 
         window.onload = function() {
@@ -367,19 +394,29 @@
 
         async function iniciarCamera() {
             try {
-                streamDeVideo = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' }, 
-                    audio: false 
-                });
+                if (streamDeVideo) {
+                    streamDeVideo.getTracks().forEach(t => t.stop());
+                }
+                const constraints = {
+                    video: { facingMode: usandoCameraFrontal ? 'user' : 'environment' },
+                    audio: false
+                };
+                streamDeVideo = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = streamDeVideo;
                 trackDeVideo = streamDeVideo.getVideoTracks()[0];
                 
-                // Verifica se o celular suporta flash/torch
-                const capabilities = trackDeVideo.getCapabilities();
-                if (!capabilities.torch) {
-                    btnFlash.style.display = 'none'; // Esconde se o aparelho não tiver flash
+                // Gerencia o botão de flash (se for frontal, esconde o flash)
+                if (usandoCameraFrontal) {
+                    btnFlash.style.display = 'none';
+                } else {
+                    const capabilities = trackDeVideo.getCapabilities ? trackDeVideo.getCapabilities() : {};
+                    if (!capabilities.torch) {
+                        btnFlash.style.display = 'none';
+                    } else {
+                        btnFlash.style.display = 'flex';
+                    }
                 }
-            } catch (err) { alert("Erro na câmera."); }
+            } catch (err) { alert("Erro ao acessar a câmera. Verifique as permissões."); }
         }
 
         function pararCamera() {
@@ -391,8 +428,17 @@
             if(streamDeVideo) { streamDeVideo.getTracks().forEach(track => track.stop()); }
         }
 
+        function alternarCamera() {
+            usandoCameraFrontal = !usandoCameraFrontal;
+            if (flashLigado) {
+                flashLigado = false;
+                btnFlash.classList.remove('ativo');
+            }
+            iniciarCamera();
+        }
+
         // ==========================================
-        // CONTROLE DO FLASH (LANTERNA)
+        // CONTROLE DO FLASH OTIMIZADO
         // ==========================================
         async function toggleFlash() {
             if (!trackDeVideo) return;
@@ -401,12 +447,23 @@
                 await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
                 if (flashLigado) {
                     btnFlash.classList.add('ativo');
+                    mostrarToast("⚡ Flash ativado!", "#4caf50");
+                    setTimeout(fecharToast, 1500);
                 } else {
                     btnFlash.classList.remove('ativo');
                 }
             } catch (err) {
-                alert("Seu dispositivo não suporta o flash por navegador.");
-                flashLigado = false;
+                // Caso o hardware precise de segundo toque para disparar o circuito
+                try {
+                    await trackDeVideo.applyConstraints({ advanced: [{ torch: true }] });
+                    flashLigado = true;
+                    btnFlash.classList.add('ativo');
+                    mostrarToast("⚡ Flash pronto!", "#4caf50");
+                    setTimeout(fecharToast, 1500);
+                } catch (e) {
+                    alert("Seu celular não suporta flash por navegador.");
+                    flashLigado = false;
+                }
             }
         }
 
@@ -429,7 +486,13 @@
             const proporcao = video.videoHeight / video.videoWidth;
             canvas.width = larguraMaxima;
             canvas.height = larguraMaxima * proporcao;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const ctx = canvas.getContext('2d');
+            if (usandoCameraFrontal) {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const fotoBase64 = canvas.toDataURL('image/jpeg', 0.5);
 
@@ -557,7 +620,10 @@
                 const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
                 const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
                 
-                html += `<div class="${classeBloqueio}">`;
+                // Se revelado, adiciona o evento de clique para abrir em tela cheia
+                const clickAcao = revelado ? `onclick="abrirLightbox('${dados.imagemTexto}')"` : '';
+                
+                html += `<div class="${classeBloqueio}" ${clickAcao}>`;
                 html += `<img src="${dados.imagemTexto}" alt="Foto">`;
                 
                 if (!revelado) {
@@ -566,9 +632,8 @@
                         <div class="lock-icon">🔒</div>
                     </div>`;
                 } else {
-                    // Ícones SVG Profissionais (Download e Share) e botões compactos otimizados
                     html += `
-                    <div class="foto-actions">
+                    <div class="foto-actions" onclick="event.stopPropagation()">
                         <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
                             <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Baixar
                         </button>
@@ -582,6 +647,21 @@
 
             html += `</div>`;
             container.innerHTML = html;
+        }
+
+        // ==========================================
+        // VISUALIZADOR DE TELA CHEIA (LIGHTBOX)
+        // ==========================================
+        function abrirLightbox(dataUrl) {
+            const modal = document.getElementById('lightbox-modal');
+            const img = document.getElementById('lightbox-img');
+            img.src = dataUrl;
+            modal.classList.add('active');
+        }
+
+        function fecharLightbox(event) {
+            const modal = document.getElementById('lightbox-modal');
+            modal.classList.remove('active');
         }
 
         function baixarFotoGaleria(dataUrl, nomeArquivo) {
