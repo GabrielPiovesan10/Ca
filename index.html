@@ -93,9 +93,14 @@
         .btn-rosa { background: var(--rosa); color: #000; }
 
         /* === TELA CÂMERA === */
-        #video-preview { width: 100%; height: 100%; object-fit: cover; }
+        #video-preview { 
+            width: 100%; height: 100%; object-fit: cover; 
+        }
+        /* Espelha a pré-visualização se for câmera frontal para ficar natural ao usuário */
+        #video-preview.espelhado {
+            transform: scaleX(-1);
+        }
         
-        /* Controles Superiores da Câmera (Flash e Virar Câmera) */
         .camera-controls-top {
             position: absolute; top: 20px; right: 20px;
             display: flex; gap: 10px; z-index: 30;
@@ -104,9 +109,9 @@
             background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.25);
             color: #fff; width: 45px; height: 45px; border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
-            cursor: pointer; backdrop-filter: blur(10px); font-size: 1.2rem;
-            transition: all 0.2s ease;
+            cursor: pointer; backdrop-filter: blur(10px); transition: all 0.2s ease;
         }
+        .camera-btn-top svg { width: 20px; height: 20px; fill: currentColor; }
         .camera-btn-top.ativo { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); }
 
         .capture-wrapper { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 10; }
@@ -135,7 +140,8 @@
         .album-card:active { background: rgba(244, 172, 183, 0.1); border-color: var(--rosa); }
         .album-info h3 { font-size: 1.1rem; color: #fff; font-weight: 600; margin-bottom: 3px; font-family: 'Montserrat', sans-serif;}
         .album-info p { font-size: 0.75rem; color: var(--prata-escuro); text-transform: uppercase; letter-spacing: 1px;}
-        .album-arrow { font-size: 1.2rem; color: var(--rosa); }
+        
+        .album-icon-svg { width: 22px; height: 22px; fill: var(--rosa); }
 
         .detalhe-topo { display: flex; align-items: center; margin-bottom: 20px; width: 100%; gap: 15px; }
         .btn-voltar {
@@ -165,7 +171,7 @@
         .lock-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 2;
         }
-        .lock-icon { font-size: 2rem; margin-bottom: 5px; }
+        .lock-icon-svg { width: 32px; height: 32px; fill: #fff; opacity: 0.9; }
 
         .foto-actions {
             position: absolute; bottom: 0; left: 0; width: 100%; padding: 6px 4px; 
@@ -197,7 +203,7 @@
 
         .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
-        /* === MENU INFERIOR === */
+        /* === MENU INFERIOR (ICONES SVG PROFISSIONAIS) === */
         .bottom-nav {
             height: 75px; background: rgba(4, 8, 20, 0.95); border-top: 1px solid rgba(255,255,255,0.08);
             display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(15px);
@@ -205,8 +211,9 @@
         }
         .nav-item {
             color: var(--prata-escuro); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; cursor: pointer; 
-            padding: 12px 25px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
+        .nav-item svg { width: 18px; height: 18px; fill: currentColor; }
         .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); border: 1px solid rgba(244, 172, 183, 0.2);}
     </style>
 </head>
@@ -248,10 +255,14 @@
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
         
-        <!-- Controles Superiores (Flash e Alternar Câmera) -->
+        <!-- Controles Superiores (Flash e Alternar Câmera em SVG) -->
         <div class="camera-controls-top">
-            <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">🔄</button>
-            <button class="camera-btn-top" id="btn-flash" onclick="toggleFlash()" title="Ativar Flash">⚡</button>
+            <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
+                <svg viewBox="0 0 24 24"><path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </button>
+            <button class="camera-btn-top" id="btn-flash" onclick="toggleFlash()" title="Ativar Flash">
+                <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l3-8z"/></svg>
+            </button>
         </div>
 
         <video id="video-preview" autoplay playsinline></video>
@@ -278,13 +289,15 @@
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- MENU INFERIOR -->
+    <!-- MENU INFERIOR (ICONES VETORIAIS) -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
-            <span style="font-size: 1.1rem;">📷</span> Câmera
+            <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>
+            Câmera
         </div>
         <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">
-            <span style="font-size: 1.1rem;">🔒</span> Álbuns
+            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            Álbuns
         </div>
     </div>
 
@@ -405,10 +418,12 @@
                 video.srcObject = streamDeVideo;
                 trackDeVideo = streamDeVideo.getVideoTracks()[0];
                 
-                // Gerencia o botão de flash (se for frontal, esconde o flash)
+                // Gerencia o espelhamento da pré-visualização frontal
                 if (usandoCameraFrontal) {
+                    video.classList.add('espelhado');
                     btnFlash.style.display = 'none';
                 } else {
+                    video.classList.remove('espelhado');
                     const capabilities = trackDeVideo.getCapabilities ? trackDeVideo.getCapabilities() : {};
                     if (!capabilities.torch) {
                         btnFlash.style.display = 'none';
@@ -437,9 +452,6 @@
             iniciarCamera();
         }
 
-        // ==========================================
-        // CONTROLE DO FLASH OTIMIZADO
-        // ==========================================
         async function toggleFlash() {
             if (!trackDeVideo) return;
             try {
@@ -447,21 +459,20 @@
                 await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
                 if (flashLigado) {
                     btnFlash.classList.add('ativo');
-                    mostrarToast("⚡ Flash ativado!", "#4caf50");
+                    mostrarToast("Flash ativado", "#4caf50");
                     setTimeout(fecharToast, 1500);
                 } else {
                     btnFlash.classList.remove('ativo');
                 }
             } catch (err) {
-                // Caso o hardware precise de segundo toque para disparar o circuito
                 try {
                     await trackDeVideo.applyConstraints({ advanced: [{ torch: true }] });
                     flashLigado = true;
                     btnFlash.classList.add('ativo');
-                    mostrarToast("⚡ Flash pronto!", "#4caf50");
-                    setTimeout(fecharToast, 1500);
+                    mostrarToast("Toque novamente para estabilizar", "#f4acb7");
+                    setTimeout(fecharToast, 1800);
                 } catch (e) {
-                    alert("Seu celular não suporta flash por navegador.");
+                    alert("Seu dispositivo não suporta flash por navegador.");
                     flashLigado = false;
                 }
             }
@@ -480,7 +491,7 @@
             video.style.opacity = '0.3';
             setTimeout(() => { video.style.opacity = '1'; }, 150);
 
-            mostrarToast("Salvando no <br>Álbum da Festa... ⏳");
+            mostrarToast("Salvando no Álbum... ⏳");
 
             const larguraMaxima = 600;
             const proporcao = video.videoHeight / video.videoWidth;
@@ -501,7 +512,7 @@
                 autor: nomeCompletoConvidado,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                mostrarToast("Foto salva no álbum! ✨", "#4caf50");
+                mostrarToast("Foto salva com sucesso!", "#4caf50");
                 setTimeout(fecharToast, 2500);
                 btnCaptura.style.pointerEvents = 'auto';
             }).catch(() => {
@@ -518,18 +529,18 @@
             const menuIcon = document.getElementById('nav-galeria');
 
             if (faltam <= 0) {
-                timerEl.innerText = "✨ ÁLBUNS REVELADOS ✨";
+                timerEl.innerText = "Álbuns Revelados";
                 timerEl.style.borderColor = "#4caf50"; 
                 timerEl.style.color = "#4caf50";
-                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🖼️</span> Álbuns';
+                menuIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Álbuns';
                 return true; 
             } else {
                 const horas = Math.floor(faltam / (1000 * 60 * 60));
                 const min = Math.floor((faltam % (1000 * 60 * 60)) / (1000 * 60));
                 const seg = Math.floor((faltam % (1000 * 60)) / 1000);
                 
-                timerEl.innerText = `Revelação em: ${horas}h ${min}m ${seg}s 🔒`;
-                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🔒</span> Secreto';
+                timerEl.innerText = `Revelação em: ${horas}h ${min}m ${seg}s`;
+                menuIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Secreto';
                 return false; 
             }
         }
@@ -593,12 +604,17 @@
                 card.className = 'album-card';
                 card.onclick = () => { autorSelecionado = autor; atualizarInterfaceGaleria(); };
                 
+                // Ícone em SVG para o card (Pasta Aberta se revelado, Cadeado se bloqueado)
+                const iconeSvg = revelado 
+                    ? '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>'
+                    : '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+
                 card.innerHTML = `
                     <div class="album-info">
                         <h3>Álbum de ${autor}</h3>
                         <p>${fotos.length} ${fotos.length === 1 ? 'foto registrada' : 'fotos registradas'}</p>
                     </div>
-                    <div class="album-arrow">${revelado ? '📂' : '🔒'}</div>
+                    <div>${iconeSvg}</div>
                 `;
                 container.appendChild(card);
             }
@@ -620,7 +636,6 @@
                 const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
                 const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
                 
-                // Se revelado, adiciona o evento de clique para abrir em tela cheia
                 const clickAcao = revelado ? `onclick="abrirLightbox('${dados.imagemTexto}')"` : '';
                 
                 html += `<div class="${classeBloqueio}" ${clickAcao}>`;
@@ -629,7 +644,7 @@
                 if (!revelado) {
                     html += `
                     <div class="lock-overlay">
-                        <div class="lock-icon">🔒</div>
+                        <svg class="lock-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
                     </div>`;
                 } else {
                     html += `
@@ -649,9 +664,6 @@
             container.innerHTML = html;
         }
 
-        // ==========================================
-        // VISUALIZADOR DE TELA CHEIA (LIGHTBOX)
-        // ==========================================
         function abrirLightbox(dataUrl) {
             const modal = document.getElementById('lightbox-modal');
             const img = document.getElementById('lightbox-img');
