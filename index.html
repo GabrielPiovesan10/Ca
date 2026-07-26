@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Câmera - 15 Anos Ana Julia</title>
+    <title>Câmera da Festa - Ana Julia</title>
     
     <meta property="og:title" content="Câmera Exclusiva 📸">
-    <meta property="og:description" content="Registre os melhores momentos da festa e compartilhe!">
+    <meta property="og:description" content="Seja o fotógrafo da festa! As fotos serão reveladas amanhã.">
     <meta property="og:type" content="website">
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
@@ -23,147 +27,96 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--azul-fundo);
-            font-family: 'Montserrat', sans-serif;
-            color: var(--prata);
-            display: flex;
-            flex-direction: column;
-            height: 100dvh;
-            overflow: hidden;
+            background-color: var(--azul-fundo); font-family: 'Montserrat', sans-serif;
+            color: var(--prata); display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
             background-image: radial-gradient(circle at top, #0a1128 0%, #040814 100%);
         }
 
         h1, h2 { font-family: 'Great Vibes', cursive; color: var(--rosa); text-align: center; font-weight: normal;}
         
-        /* === ESTRUTURA DE TELAS === */
-        .screen {
-            display: none;
-            width: 100%;
-            height: calc(100dvh - 75px); /* Trava exata descontando o menu inferior */
-            position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
+        .screen { display: none; width: 100%; height: calc(100dvh - 75px); position: relative; overflow-y: auto; overflow-x: hidden; }
         .screen.active { display: flex; flex-direction: column; align-items: center; }
 
-        /* === TELA DE LOGIN (LUXO) === */
+        /* === TELA LOGIN === */
         #login-screen { justify-content: center; padding: 20px; }
         .login-box {
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(224, 224, 224, 0.15);
-            padding: 40px 25px; 
-            border-radius: 24px; 
-            backdrop-filter: blur(15px);
-            text-align: center; 
-            width: 100%; 
-            max-width: 360px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(224, 224, 224, 0.15);
+            padding: 40px 25px; border-radius: 24px; backdrop-filter: blur(15px);
+            text-align: center; width: 100%; max-width: 360px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         .login-title { font-size: 3.5rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(244, 172, 183, 0.3); }
         .login-subtitle { font-size: 0.85rem; color: var(--prata-escuro); margin-bottom: 30px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase;}
         
-        .input-group {
-            display: flex; gap: 10px; margin-bottom: 25px;
-        }
         .lux-input {
-            width: 100%; padding: 16px; border-radius: 12px;
-            border: 1px solid rgba(224, 224, 224, 0.2); 
-            background: rgba(0,0,0,0.4);
-            color: #fff; font-size: 0.95rem; text-align: center; 
-            outline: none; transition: all 0.3s ease;
+            width: 100%; padding: 16px; border-radius: 12px; margin-bottom: 25px;
+            border: 1px solid rgba(224, 224, 224, 0.2); background: rgba(0,0,0,0.4);
+            color: #fff; font-size: 0.95rem; text-align: center; outline: none; transition: all 0.3s ease;
             font-family: 'Montserrat', sans-serif;
         }
-        .lux-input::placeholder { color: rgba(224, 224, 224, 0.4); }
         .lux-input:focus { border-color: var(--rosa); box-shadow: 0 0 15px rgba(244, 172, 183, 0.2); }
 
         .btn-acao {
-            background: linear-gradient(135deg, var(--prata) 0%, #999 100%);
-            color: var(--azul-fundo); border: none; padding: 16px 30px;
-            border-radius: 30px; font-size: 0.9rem; font-weight: 600;
+            background: linear-gradient(135deg, var(--prata) 0%, #999 100%); color: var(--azul-fundo);
+            border: none; padding: 16px 30px; border-radius: 30px; font-size: 0.9rem; font-weight: 600;
             cursor: pointer; width: 100%; text-transform: uppercase; letter-spacing: 2px;
             box-shadow: 0 5px 15px rgba(255,255,255,0.1); transition: all 0.3s ease;
         }
         .btn-acao:active { transform: scale(0.97); }
 
-        /* === TELA DA CÂMERA === */
+        /* === TELA CÂMERA === */
         #camera-screen { background: #000; justify-content: center; overflow: hidden; }
         #video-preview { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Botão corrigido: agora fica sempre seguro acima do menu */
-        .capture-wrapper {
-            position: absolute;
-            bottom: 30px; 
-            left: 0; width: 100%;
-            display: flex; justify-content: center;
-            z-index: 10;
-        }
+        .capture-wrapper { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: center; z-index: 10; }
         .capture-btn {
-            width: 75px; height: 75px;
-            background: rgba(255, 255, 255, 0.2); border: 3px solid #fff;
-            border-radius: 50%; cursor: pointer; backdrop-filter: blur(4px);
-            transition: all 0.2s ease;
+            width: 75px; height: 75px; background: rgba(255, 255, 255, 0.2); border: 3px solid #fff;
+            border-radius: 50%; cursor: pointer; backdrop-filter: blur(4px); transition: all 0.2s ease;
         }
         .capture-btn:active { background: #fff; transform: scale(0.9); }
         
-        /* Notificação chique */
         .status-toast {
-            position: absolute; top: 20px; background: rgba(4, 8, 20, 0.85);
-            padding: 12px 25px; border-radius: 30px; border: 1px solid var(--prata);
-            font-size: 0.85rem; display: none; z-index: 20; color: #fff; 
-            font-weight: 500; backdrop-filter: blur(10px); letter-spacing: 1px;
-            text-transform: uppercase;
+            position: absolute; top: 20px; background: rgba(4, 8, 20, 0.85); padding: 12px 25px; border-radius: 30px; border: 1px solid var(--rosa);
+            font-size: 0.85rem; display: none; z-index: 20; color: #fff; font-weight: 500; backdrop-filter: blur(10px); letter-spacing: 1px; text-transform: uppercase; text-align: center;
         }
 
-        /* === TELA DA GALERIA === */
+        /* === TELA GALERIA === */
         #gallery-screen { padding: 30px 20px; justify-content: flex-start; }
         .gallery-header { margin-bottom: 25px; text-align: center; width: 100%; }
-        .gallery-desc { font-size: 0.8rem; color: var(--prata-escuro); margin-top: 5px; }
+        .timer-revelacao { font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 10px; }
         
-        .grid-galeria {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            width: 100%;
-            padding-bottom: 40px;
-        }
-        
+        .grid-galeria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; padding-bottom: 40px; }
         .foto-card {
-            position: relative; width: 100%; aspect-ratio: 3/4;
-            border-radius: 16px; overflow: hidden; background: #111;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; 
+            background: #111; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-        .foto-card img { width: 100%; height: 100%; object-fit: cover; }
+        .foto-card img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.5s ease; }
         
-        /* Botões de Ação na Foto */
+        .foto-card.bloqueada img { filter: blur(15px) grayscale(30%); }
+        .lock-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 2;
+        }
+        .lock-icon { font-size: 2rem; margin-bottom: 5px; }
+        .foto-autor { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px #000;}
+
         .foto-actions {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 15px 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            display: flex; justify-content: space-around;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 10px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-around;
         }
         .btn-icon {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
-            color: #fff; width: 40px; height: 40px; border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; backdrop-filter: blur(5px); text-decoration: none;
-            font-size: 1.2rem; transition: background 0.3s ease;
+            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; 
+            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); font-size: 1.2rem; transition: background 0.3s ease; text-decoration: none;
         }
         .btn-icon:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa);}
-
         .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
         /* === MENU INFERIOR === */
         .bottom-nav {
-            height: 75px; 
-            background: rgba(4, 8, 20, 0.95);
-            border-top: 1px solid rgba(255,255,255,0.08);
-            display: none; justify-content: space-around; align-items: center;
-            width: 100%; z-index: 100; backdrop-filter: blur(15px);
+            height: 75px; background: rgba(4, 8, 20, 0.95); border-top: 1px solid rgba(255,255,255,0.08);
+            display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(15px);
         }
         .nav-item {
-            color: var(--prata-escuro); font-size: 0.75rem; text-transform: uppercase;
-            font-weight: 600; cursor: pointer; padding: 12px 25px; border-radius: 30px;
-            letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+            color: var(--prata-escuro); font-size: 0.75rem; text-transform: uppercase; font-weight: 600; cursor: pointer; 
+            padding: 12px 25px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
         .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); border: 1px solid rgba(244, 172, 183, 0.2);}
         
@@ -175,13 +128,8 @@
     <div id="login-screen" class="screen active">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
-            <p class="login-subtitle">Câmera do Convidado</p>
-            
-            <div class="input-group">
-                <input type="text" id="input-nome" class="lux-input" placeholder="Nome" autocomplete="off">
-                <input type="text" id="input-sobrenome" class="lux-input" placeholder="Sobrenome" autocomplete="off">
-            </div>
-            
+            <p class="login-subtitle">Câmera Coletiva</p>
+            <input type="text" id="input-nome" class="lux-input" placeholder="Seu nome" autocomplete="off">
             <button class="btn-acao" onclick="entrarNoSistema()">Ligar Câmera</button>
         </div>
     </div>
@@ -190,22 +138,20 @@
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
         <video id="video-preview" autoplay playsinline></video>
-        
         <div class="capture-wrapper">
-            <button class="capture-btn" onclick="tirarFoto()"></button>
+            <button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button>
         </div>
-        
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA PESSOAL -->
+    <!-- 3. TELA DA GALERIA COLETIVA -->
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
-            <h2 style="font-size: 2.8rem;">Suas Fotos</h2>
-            <p class="gallery-desc">Salve ou compartilhe seus cliques da festa!</p>
+            <h2 style="font-size: 2.5rem;">Álbum da Festa</h2>
+            <div class="timer-revelacao" id="timer-display">Calculando...</div>
         </div>
         <div class="grid-galeria" id="grid-fotos">
-            <!-- As fotos aparecem aqui -->
+            <div class="empty-state">Carregando fotos...</div>
         </div>
     </div>
 
@@ -215,34 +161,47 @@
             <span style="font-size: 1.1rem;">📷</span> Câmera
         </div>
         <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">
-            <span style="font-size: 1.1rem;">🖼️</span> Galeria
+            <span style="font-size: 1.1rem;">🔒</span> Galeria
         </div>
     </div>
 
     <script>
-        // Variáveis Locais
-        let nomeCompleto = "";
-        let streamDeVideo = null;
-        let minhasCapturas = []; // Array que guarda as fotos tiradas
+        // ==========================================
+        // CHAVES DO FIREBASE (PROJETO: ana-julia-4539a)
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyBO54dR0ngrdoT2DfjTv1iopt-1iGaG5Zg",
+            authDomain: "ana-julia-4539a.firebaseapp.com",
+            projectId: "ana-julia-4539a",
+            storageBucket: "ana-julia-4539a.firebasestorage.app",
+            messagingSenderId: "728961511590",
+            appId: "1:728961511590:web:2444384e1387993e900467",
+            measurementId: "G-X45YK6KP2N"
+        };
 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Variáveis de Controle
+        let nomeConvidado = "";
+        let streamDeVideo = null;
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
         const statusToast = document.getElementById('status-toast');
+        const btnCaptura = document.getElementById('btn-tirar-foto');
         
-        // ==========================================
-        // LÓGICA DE NAVEGAÇÃO
-        // ==========================================
+        // Data fixada: 17 de Outubro de 2026 às 12:00
+        const dataRevelacao = new Date('2026-10-17T12:00:00').getTime();
+
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
-            const sobrenome = document.getElementById('input-sobrenome').value.trim();
-            
-            if(!nome) { alert("Por favor, informe pelo menos o seu nome!"); return; }
-            
-            nomeCompleto = `${nome} ${sobrenome}`.trim();
+            if(!nome) { alert("Por favor, digite seu nome!"); return; }
+            nomeConvidado = nome;
             
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('bottom-menu').style.display = 'flex';
             mudarAba('camera');
+            iniciarEscutaGaleria();
         }
 
         function mudarAba(aba) {
@@ -259,105 +218,150 @@
                 document.getElementById('gallery-screen').classList.add('active');
                 document.getElementById('nav-galeria').classList.add('active');
                 pararCamera();
-                renderizarGaleria();
+                atualizarInterfaceGaleria();
             }
         }
 
-        // ==========================================
-        // CÂMERA E CAPTURA (SALVANDO LOCAL)
-        // ==========================================
         async function iniciarCamera() {
             try {
-                streamDeVideo = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'environment' }, 
-                    audio: false
-                });
+                streamDeVideo = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
                 video.srcObject = streamDeVideo;
-            } catch (err) {
-                alert("Erro ao acessar a câmera. Tente usar o Safari ou Chrome e permita o acesso.");
-            }
+            } catch (err) { alert("Erro na câmera. Verifique as permissões do navegador."); }
         }
 
         function pararCamera() {
-            if(streamDeVideo) {
-                streamDeVideo.getTracks().forEach(track => track.stop());
-            }
+            if(streamDeVideo) { streamDeVideo.getTracks().forEach(track => track.stop()); }
         }
 
-        function mostrarToast(msg) {
-            statusToast.innerText = msg;
+        function mostrarToast(msg, cor = 'var(--rosa)') {
+            statusToast.innerHTML = msg;
+            statusToast.style.borderColor = cor;
             statusToast.style.display = 'block';
-            setTimeout(() => { statusToast.style.display = 'none'; }, 2500);
         }
+
+        function fecharToast() { statusToast.style.display = 'none'; }
 
         function tirarFoto() {
-            // Efeito visual de "piscar" a tela
+            btnCaptura.style.pointerEvents = 'none';
             video.style.opacity = '0.3';
             setTimeout(() => { video.style.opacity = '1'; }, 150);
 
-            // Captura o quadro
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            mostrarToast("Salvando no <br>Álbum da Festa... ⏳");
+
+            const larguraMaxima = 600;
+            const proporcao = video.videoHeight / video.videoWidth;
+            canvas.width = larguraMaxima;
+            canvas.height = larguraMaxima * proporcao;
             canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Converte para Base64 (salva na memória do navegador temporariamente)
-            const fotoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            minhasCapturas.unshift(fotoDataUrl); // Adiciona no início da lista
+            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.5);
 
-            mostrarToast("FOTO SALVA NA GALERIA!");
+            db.collection("album_coletivo").add({
+                imagemTexto: fotoBase64,
+                autor: nomeConvidado,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                mostrarToast("Foto salva no álbum! ✨", "#4caf50");
+                setTimeout(fecharToast, 2500);
+                btnCaptura.style.pointerEvents = 'auto';
+            }).catch(() => {
+                mostrarToast("Erro de conexão.", "red");
+                setTimeout(fecharToast, 2500);
+                btnCaptura.style.pointerEvents = 'auto';
+            });
         }
 
-        // ==========================================
-        // GALERIA (RENDERIZAR, BAIXAR E COMPARTILHAR)
-        // ==========================================
-        function renderizarGaleria() {
+        function checarRevelacao() {
+            const agora = new Date().getTime();
+            const faltam = dataRevelacao - agora;
+            const timerEl = document.getElementById('timer-display');
+            const menuIcon = document.getElementById('nav-galeria');
+
+            if (faltam <= 0) {
+                timerEl.innerText = "✨ ÁLBUM REVELADO ✨";
+                timerEl.style.borderColor = "#4caf50"; timerEl.style.color = "#4caf50";
+                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🖼️</span> Galeria';
+                return true; 
+            } else {
+                const horas = Math.floor(faltam / (1000 * 60 * 60));
+                const min = Math.floor((faltam % (1000 * 60 * 60)) / (1000 * 60));
+                timerEl.innerText = `Revelação em: ${horas}h e ${min}m 🔒`;
+                menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🔒</span> Secreta';
+                return false; 
+            }
+        }
+
+        let cacheFotos = [];
+
+        function iniciarEscutaGaleria() {
+            db.collection("album_coletivo")
+                .orderBy("timestamp", "desc")
+                .onSnapshot((querySnapshot) => {
+                    cacheFotos = [];
+                    querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
+                    if(document.getElementById('gallery-screen').classList.contains('active')) {
+                        atualizarInterfaceGaleria();
+                    }
+                });
+        }
+
+        function atualizarInterfaceGaleria() {
+            const revelado = checarRevelacao();
             const grid = document.getElementById('grid-fotos');
             grid.innerHTML = ''; 
             
-            if (minhasCapturas.length === 0) {
-                grid.innerHTML = '<div class="empty-state">Você ainda não tirou nenhuma foto. Volte para a câmera!</div>';
+            if (cacheFotos.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Ninguém tirou foto ainda.<br>Seja o primeiro!</div>';
                 return;
             }
 
-            minhasCapturas.forEach((fotoBase64, index) => {
+            cacheFotos.forEach((dados, index) => {
                 const div = document.createElement('div');
-                div.className = 'foto-card';
+                div.className = revelado ? 'foto-card' : 'foto-card bloqueada';
+                const nomeArquivo = `15Anos_Por_${dados.autor.replace(/\s+/g, '')}_${index}.jpg`;
                 
-                // Nome do arquivo para download
-                const nomeArquivo = `AnaJulia15_${nomeCompleto.replace(/\s+/g, '')}_${index}.jpg`;
+                let htmlCard = `<img src="${dados.imagemTexto}" alt="Foto">`;
                 
-                div.innerHTML = `
-                    <img src="${fotoBase64}" alt="Minha Foto">
+                if (!revelado) {
+                    htmlCard += `
+                    <div class="lock-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <div class="foto-autor">Por: ${dados.autor}</div>
+                    </div>`;
+                } else {
+                    htmlCard += `
                     <div class="foto-actions">
-                        <a href="${fotoBase64}" download="${nomeArquivo}" class="btn-icon" title="Baixar Foto">⬇️</a>
-                        <div class="btn-icon" onclick="compartilharFoto('${fotoBase64}', '${nomeArquivo}')" title="Compartilhar">📤</div>
-                    </div>
-                `;
+                        <div class="btn-icon" onclick="baixarFotoForcado('${dados.imagemTexto}', '${nomeArquivo}')" title="Baixar">⬇️</div>
+                        <div class="btn-icon" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')" title="Compartilhar">📤</div>
+                    </div>`;
+                }
+                div.innerHTML = htmlCard;
                 grid.appendChild(div);
             });
         }
 
-        // Função de Compartilhar Nativa do Celular (WhatsApp, Instagram, etc)
+        setInterval(() => {
+            if(document.getElementById('gallery-screen').classList.contains('active')) { checarRevelacao(); atualizarInterfaceGaleria(); }
+        }, 60000);
+
+        function baixarFotoForcado(dataUrl, nomeArquivo) {
+            fetch(dataUrl).then(res => res.blob()).then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.style.display = 'none'; link.href = url; link.download = nomeArquivo;
+                document.body.appendChild(link); link.click();
+                window.URL.revokeObjectURL(url); document.body.removeChild(link);
+            }).catch(() => alert("Use o botão 📤 Compartilhar para salvar."));
+        }
+
         async function compartilharFoto(dataUrl, nomeArquivo) {
             try {
-                // Converte o Base64 de volta para um arquivo físico que o WhatsApp entenda
-                const res = await fetch(dataUrl);
-                const blob = await res.blob();
+                const res = await fetch(dataUrl); const blob = await res.blob();
                 const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
-
-                // Verifica se o celular suporta compartilhar arquivos
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({
-                        files: [file],
-                        title: '15 Anos Ana Julia',
-                        text: 'Olha o clique que eu fiz nos 15 anos da Ana Julia! ✨'
-                    });
-                } else {
-                    alert("Seu navegador não suporta compartilhamento direto. Use o botão de baixar e envie pela sua galeria!");
-                }
-            } catch (error) {
-                console.log('Compartilhamento cancelado ou falhou', error);
-            }
+                    await navigator.share({ files: [file], title: 'Festa Ana Julia', text: 'Olha que foto sensacional da festa! ✨' });
+                } else { alert("Use o botão ⬇️ para baixar e enviar pela galeria."); }
+            } catch (error) { console.log('Compartilhamento cancelado'); }
         }
     </script>
 </body>
