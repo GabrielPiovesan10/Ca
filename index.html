@@ -11,6 +11,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDKs (Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -63,21 +64,23 @@
         #link-gerado-container { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .link-text { font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px; word-break: break-all; color: var(--rosa); margin-bottom: 12px; border: 1px dashed rgba(244, 172, 183, 0.3);}
 
-        /* === TELA LOGIN === */
+        /* === TELA LOGIN (NOME E SOBRENOME) === */
         .login-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(224, 224, 224, 0.15);
-            padding: 40px 25px; border-radius: 24px; backdrop-filter: blur(15px);
+            padding: 35px 20px; border-radius: 24px; backdrop-filter: blur(15px);
             text-align: center; width: 90%; max-width: 360px; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
-        .login-title { font-size: 3.5rem; margin-bottom: 5px; text-shadow: 0 2px 10px rgba(244, 172, 183, 0.3); }
-        .login-subtitle { font-size: 0.85rem; color: var(--prata-escuro); margin-bottom: 30px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase;}
+        .login-title { font-size: 3.2rem; margin-bottom: 2px; text-shadow: 0 2px 10px rgba(244, 172, 183, 0.3); }
+        .login-subtitle { font-size: 0.8rem; color: var(--prata-escuro); margin-bottom: 25px; font-weight: 300; letter-spacing: 1px; text-transform: uppercase;}
         
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .lux-input {
-            width: 100%; padding: 16px; border-radius: 12px; margin-bottom: 25px;
+            width: 100%; padding: 14px; border-radius: 12px;
             border: 1px solid rgba(224, 224, 224, 0.2); background: rgba(0,0,0,0.4);
-            color: #fff; font-size: 0.95rem; text-align: center; outline: none; transition: all 0.3s ease;
+            color: #fff; font-size: 0.9rem; text-align: center; outline: none; transition: all 0.3s ease;
             font-family: 'Montserrat', sans-serif;
         }
+        .lux-input::placeholder { color: rgba(224, 224, 224, 0.4); }
         .lux-input:focus { border-color: var(--rosa); box-shadow: 0 0 15px rgba(244, 172, 183, 0.2); }
 
         .btn-acao {
@@ -103,18 +106,11 @@
             font-size: 0.85rem; display: none; z-index: 20; color: #fff; font-weight: 500; backdrop-filter: blur(10px); letter-spacing: 1px; text-transform: uppercase; text-align: center;
         }
 
-        .trocar-perfil {
-            position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2);
-            color: var(--prata-escuro); padding: 6px 12px; border-radius: 15px; font-size: 0.7rem; cursor: pointer; z-index: 30;
-            text-transform: uppercase; letter-spacing: 0.5px;
-        }
-
-        /* === TELA GALERIA (ESTRUTURA DE ÁLBUNS) === */
+        /* === TELA GALERIA === */
         #gallery-screen { padding: 25px 15px; }
         .gallery-header { margin-bottom: 20px; text-align: center; width: 100%; }
         .timer-revelacao { font-size: 0.8rem; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 8px; letter-spacing: 0.5px;}
         
-        /* Lista de Álbuns Individuais (Cards por Convidado) */
         .lista-albuns { display: flex; flex-direction: column; gap: 12px; width: 100%; padding-bottom: 40px; }
         .album-card {
             background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.12);
@@ -126,7 +122,6 @@
         .album-info p { font-size: 0.75rem; color: var(--prata-escuro); text-transform: uppercase; letter-spacing: 1px;}
         .album-arrow { font-size: 1.2rem; color: var(--rosa); }
 
-        /* Grade de Fotos Detalhada de um Álbum Específico */
         .detalhe-topo { display: flex; align-items: center; margin-bottom: 20px; width: 100%; gap: 15px; }
         .btn-voltar {
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff;
@@ -147,25 +142,15 @@
         }
         .lock-icon { font-size: 2rem; margin-bottom: 5px; }
 
-        /* Nome de quem tirou fixo embaixo da foto */
-        .tag-autor-fixa {
-            position: relative; z-index: 3; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 20px 10px 8px 10px; width: 100%; text-align: center;
-        }
-        .tag-autor-fixa span {
-            font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-            color: var(--rosa); background: rgba(0,0,0,0.6); padding: 3px 8px; border-radius: 10px;
-            border: 1px solid rgba(244,172,183,0.3);
-        }
-
+        /* Botões Compactos, Elegantes e Profissionais na Base da Foto */
         .foto-actions {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 8px; 
-            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-around; gap: 6px; z-index: 4;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 8px 6px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-around; gap: 4px; z-index: 4;
         }
         .btn-lux {
-            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; 
-            padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px;
-            cursor: pointer; backdrop-filter: blur(8px); font-size: 0.75rem; font-weight: 500; 
+            background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; 
+            padding: 5px 10px; border-radius: 15px; display: flex; align-items: center; gap: 4px;
+            cursor: pointer; backdrop-filter: blur(8px); font-size: 0.65rem; font-weight: 500; 
             font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease;
         }
         .btn-lux:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); transform: scale(0.95); }
@@ -187,6 +172,7 @@
 </head>
 <body>
 
+    <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
@@ -203,18 +189,24 @@
         </div>
     </div>
 
+    <!-- 1. TELA DE LOGIN (NOME E SOBRENOME) -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
             <p class="login-subtitle">Registre os momentos na sua perspectiva!</p>
-            <input type="text" id="input-nome" class="lux-input" placeholder="Seu nome" autocomplete="off">
+            
+            <div class="input-group">
+                <input type="text" id="input-nome" class="lux-input" placeholder="Nome" autocomplete="off">
+                <input type="text" id="input-sobrenome" class="lux-input" placeholder="Sobrenome" autocomplete="off">
+            </div>
+
             <button class="btn-acao" onclick="entrarNoSistema()">Ligar Câmera</button>
         </div>
     </div>
 
+    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
-        <button class="trocar-perfil" onclick="esquecerPerfil()">🔄 Trocar Nome</button>
         <video id="video-preview" autoplay playsinline></video>
         <div class="capture-wrapper">
             <button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button>
@@ -222,6 +214,7 @@
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
+    <!-- 3. TELA DA GALERIA -->
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
             <h2 style="font-size: 2.3rem;">Álbuns da Festa</h2>
@@ -232,6 +225,7 @@
         </div>
     </div>
 
+    <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
             <span style="font-size: 1.1rem;">📷</span> Câmera
@@ -255,10 +249,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        let nomeConvidado = "";
+        let nomeCompletoConvidado = "";
         let streamDeVideo = null;
         let timestampRevelacao = 0;
-        let autorSelecionado = null; // Controla qual álbum individual está aberto
+        let autorSelecionado = null;
 
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
@@ -276,9 +270,9 @@
                 document.getElementById('admin-screen').classList.add('active');
             } else {
                 timestampRevelacao = new Date(dataParam).getTime();
-                const nomeSalvo = localStorage.getItem('anajulia_convidado_nome');
+                const nomeSalvo = localStorage.getItem('anajulia_convidado_completo');
                 if (nomeSalvo) {
-                    nomeConvidado = nomeSalvo;
+                    nomeCompletoConvidado = nomeSalvo;
                     document.getElementById('bottom-menu').style.display = 'flex';
                     mudarAba('camera');
                     iniciarEscutaGaleria();
@@ -306,22 +300,17 @@
 
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
+            const sobrenome = document.getElementById('input-sobrenome').value.trim();
+            
             if(!nome) { alert("Por favor, digite seu nome!"); return; }
             
-            nomeConvidado = nome;
-            localStorage.setItem('anajulia_convidado_nome', nomeConvidado);
+            nomeCompletoConvidado = `${nome} ${sobrenome}`.trim();
+            localStorage.setItem('anajulia_convidado_completo', nomeCompletoConvidado);
             
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('bottom-menu').style.display = 'flex';
             mudarAba('camera');
             iniciarEscutaGaleria();
-        }
-
-        function esquecerPerfil() {
-            if(confirm("Deseja alterar o nome associado a este celular?")) {
-                localStorage.removeItem('anajulia_convidado_nome');
-                location.reload();
-            }
         }
 
         function mudarAba(aba) {
@@ -333,7 +322,7 @@
             if(aba === 'camera') {
                 document.getElementById('camera-screen').classList.add('active');
                 document.getElementById('nav-camera').classList.add('active');
-                autorSelecionado = null; // Reseta o álbum aberto ao voltar pra câmera
+                autorSelecionado = null;
                 iniciarCamera();
                 pararContadorTempoReal();
             } else {
@@ -381,7 +370,7 @@
 
             db.collection("album_coletivo").add({
                 imagemTexto: fotoBase64,
-                autor: nomeConvidado,
+                autor: nomeCompletoConvidado,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 mostrarToast("Foto salva no álbum! ✨", "#4caf50");
@@ -447,9 +436,6 @@
                 });
         }
 
-        // ==========================================
-        // AGRUPAMENTO E RENDERIZAÇÃO POR ÁLBUNS DE AUTOR
-        // ==========================================
         function atualizarInterfaceGaleria() {
             const revelado = checarRevelacao();
             const container = document.getElementById('container-albuns');
@@ -460,13 +446,11 @@
                 return;
             }
 
-            // Se o usuário entrou dentro do álbum de uma pessoa específica
             if (autorSelecionado !== null) {
                 renderizarDetalhesAlbum(autorSelecionado, revelado);
                 return;
             }
 
-            // Caso contrário, agrupa todas as fotos por nome do autor
             const albunsPorAutor = {};
             cacheFotos.forEach(foto => {
                 const autor = foto.autor || "Convidado";
@@ -476,7 +460,6 @@
                 albunsPorAutor[autor].push(foto);
             });
 
-            // Cria um card/pasta para cada convidado que tirou foto
             for (const [autor, fotos] of Object.entries(albunsPorAutor)) {
                 const card = document.createElement('div');
                 card.className = 'album-card';
@@ -493,15 +476,14 @@
             }
         }
 
-        // Mostra as fotos detalhadas ao abrir o álbum de alguém
         function renderizarDetalhesAlbum(autor, revelado) {
             const container = document.getElementById('container-albuns');
             const fotosDoAutor = cacheFotos.filter(f => (f.autor || "Convidado") === autor);
 
             let html = `
                 <div class="detalhe-topo">
-                    <button class="btn-voltar" onclick="autorSelecionado = null; atualizarInterfaceGaleria();">← Voltar aos Álbuns</button>
-                    <h3 style="font-family: 'Great Vibes', cursive; font-size: 2rem; color: var(--rosa);">Álbum de ${autor}</h3>
+                    <button class="btn-voltar" onclick="autorSelecionado = null; atualizarInterfaceGaleria();">← Voltar</button>
+                    <h3 style="font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: var(--rosa);">Álbum de ${autor}</h3>
                 </div>
                 <div class="grid-fotos-autor">
             `;
@@ -520,9 +502,6 @@
                     </div>`;
                 } else {
                     html += `
-                    <div class="tag-autor-fixa">
-                        <span>Por: ${autor}</span>
-                    </div>
                     <div class="foto-actions">
                         <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
                             <span>⬇️</span> Baixar
