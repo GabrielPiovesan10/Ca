@@ -6,12 +6,12 @@
     <title>Câmera da Festa - Ana Julia</title>
     
     <meta property="og:title" content="Câmera Exclusiva 📸">
-    <meta property="og:description" content="Seja o fotógrafo da festa! As fotos serão reveladas amanhã.">
+    <meta property="og:description" content="Seja o fotógrafo da festa! As fotos serão reveladas na data escolhida.">
     <meta property="og:type" content="website">
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (Apenas Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -36,6 +36,26 @@
         
         .screen { display: none; width: 100%; height: calc(100dvh - 75px); position: relative; overflow-y: auto; overflow-x: hidden; }
         .screen.active { display: flex; flex-direction: column; align-items: center; }
+
+        /* === TELA ADMIN (GERAR LINK) === */
+        #admin-screen { height: 100dvh; justify-content: center; padding: 20px; z-index: 200; display: flex; }
+        .admin-box {
+            background: rgba(10, 17, 40, 0.95); border: 1px solid var(--rosa);
+            padding: 35px 25px; border-radius: 24px; text-align: center; width: 100%; max-width: 380px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8); backdrop-filter: blur(15px);
+        }
+        .admin-box h2 { font-size: 3rem; margin-bottom: 5px; }
+        .admin-box p { font-size: 0.85rem; margin-bottom: 25px; line-height: 1.5; color: var(--prata-escuro);}
+        
+        .date-input {
+            width: 100%; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+            border: 1px solid rgba(224, 224, 224, 0.2); background: rgba(0,0,0,0.5); color: #fff;
+            font-family: 'Montserrat', sans-serif; outline: none; text-align: center; font-size: 1rem;
+        }
+        .date-input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
+
+        #link-gerado-container { display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .link-text { font-size: 0.75rem; background: #000; padding: 12px; border-radius: 8px; word-break: break-all; color: var(--rosa); margin-bottom: 15px; border: 1px dashed rgba(244, 172, 183, 0.3);}
 
         /* === TELA LOGIN === */
         #login-screen { justify-content: center; padding: 20px; }
@@ -62,6 +82,7 @@
             box-shadow: 0 5px 15px rgba(255,255,255,0.1); transition: all 0.3s ease;
         }
         .btn-acao:active { transform: scale(0.97); }
+        .btn-rosa { background: var(--rosa); color: #000; }
 
         /* === TELA CÂMERA === */
         #camera-screen { background: #000; justify-content: center; overflow: hidden; }
@@ -124,8 +145,25 @@
 </head>
 <body>
 
-    <!-- 1. TELA DE LOGIN -->
-    <div id="login-screen" class="screen active">
+    <!-- 0. PAINEL DE CONFIGURAÇÃO (ADMIN) -->
+    <div id="admin-screen" class="screen">
+        <div class="admin-box">
+            <h2>Painel da Festa</h2>
+            <p>Escolha o dia e horário em que as fotos coletivas serão reveladas para os convidados.</p>
+            
+            <input type="datetime-local" id="data-input" class="date-input">
+            <button class="btn-acao btn-rosa" onclick="gerarLink()">Gerar Link para o QR Code</button>
+
+            <div id="link-gerado-container">
+                <p style="font-size: 0.75rem; margin-bottom: 8px; color: #fff;">Copie este link e crie o seu QR Code:</p>
+                <div class="link-text" id="link-text"></div>
+                <button class="btn-acao" onclick="copiarLink()">Copiar Link</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. TELA DE LOGIN DO CONVIDADO -->
+    <div id="login-screen" class="screen">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
             <p class="login-subtitle">Câmera Coletiva</p>
@@ -185,14 +223,52 @@
         // Variáveis de Controle
         let nomeConvidado = "";
         let streamDeVideo = null;
+        let timestampRevelacao = 0;
+
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
         const statusToast = document.getElementById('status-toast');
         const btnCaptura = document.getElementById('btn-tirar-foto');
-        
-        // Data fixada: 17 de Outubro de 2026 às 12:00
-        const dataRevelacao = new Date('2026-10-17T12:00:00').getTime();
+        let galeriaEmTempoReal = null;
 
+        // ==========================================
+        // LEITURA DA URL E DEFINIÇÃO DE TELA
+        // ==========================================
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+
+            if (!dataParam) {
+                // Sem parâmetro de data = Painel Administrativo da Ana Julia/GP Tech
+                document.getElementById('admin-screen').classList.add('active');
+            } else {
+                // Com parâmetro = Convidado escaneou o QR Code
+                timestampRevelacao = new Date(dataParam).getTime();
+                document.getElementById('login-screen').classList.add('active');
+            }
+        };
+
+        function gerarLink() {
+            const dataEscolhida = document.getElementById('data-input').value;
+            if(!dataEscolhida) { alert("Por favor, selecione a data e o horário da revelação!"); return; }
+
+            const urlLimpa = window.location.href.split('?')[0];
+            const linkFinal = `${urlLimpa}?data=${dataEscolhida}`;
+            
+            document.getElementById('link-text').innerText = linkFinal;
+            document.getElementById('link-gerado-container').style.display = 'block';
+        }
+
+        function copiarLink() {
+            const link = document.getElementById('link-text').innerText;
+            navigator.clipboard.writeText(link).then(() => { 
+                alert("Link copiado com sucesso! Crie o seu QR Code com ele."); 
+            });
+        }
+
+        // ==========================================
+        // NAVEGAÇÃO E SISTEMA DO CONVIDADO
+        // ==========================================
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
             if(!nome) { alert("Por favor, digite seu nome!"); return; }
@@ -273,7 +349,7 @@
 
         function checarRevelacao() {
             const agora = new Date().getTime();
-            const faltam = dataRevelacao - agora;
+            const faltam = timestampRevelacao - agora;
             const timerEl = document.getElementById('timer-display');
             const menuIcon = document.getElementById('nav-galeria');
 
