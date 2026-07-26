@@ -11,7 +11,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs (Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -96,7 +95,6 @@
         #video-preview { 
             width: 100%; height: 100%; object-fit: cover; 
         }
-        /* Espelha a pré-visualização se for câmera frontal para ficar natural ao usuário */
         #video-preview.espelhado {
             transform: scaleX(-1);
         }
@@ -203,7 +201,7 @@
 
         .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
-        /* === MENU INFERIOR (ICONES SVG PROFISSIONAIS) === */
+        /* === MENU INFERIOR === */
         .bottom-nav {
             height: 75px; background: rgba(4, 8, 20, 0.95); border-top: 1px solid rgba(255,255,255,0.08);
             display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(15px);
@@ -219,7 +217,6 @@
 </head>
 <body>
 
-    <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
@@ -236,7 +233,6 @@
         </div>
     </div>
 
-    <!-- 1. TELA DE LOGIN -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <h1 class="login-title">Ana Julia</h1>
@@ -251,11 +247,9 @@
         </div>
     </div>
 
-    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div id="status-toast" class="status-toast"></div>
         
-        <!-- Controles Superiores (Flash e Alternar Câmera em SVG) -->
         <div class="camera-controls-top">
             <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
                 <svg viewBox="0 0 24 24"><path d="M20 4h-3.17L15 2H9L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 13c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
@@ -272,7 +266,6 @@
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA -->
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
             <h2 style="font-size: 2.3rem;">Álbuns da Festa</h2>
@@ -283,13 +276,11 @@
         </div>
     </div>
 
-    <!-- MODAL DE TELA CHEIA (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharLightbox(event)">
         <button class="lightbox-close" onclick="fecharLightbox(event)">✕</button>
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- MENU INFERIOR (ICONES VETORIAIS) -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
             <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>
@@ -411,14 +402,17 @@
                     streamDeVideo.getTracks().forEach(t => t.stop());
                 }
                 const constraints = {
-                    video: { facingMode: usandoCameraFrontal ? 'user' : 'environment' },
+                    video: { 
+                        facingMode: usandoCameraFrontal ? 'user' : 'environment',
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    },
                     audio: false
                 };
                 streamDeVideo = await navigator.mediaDevices.getUserMedia(constraints);
                 video.srcObject = streamDeVideo;
                 trackDeVideo = streamDeVideo.getVideoTracks()[0];
                 
-                // Gerencia o espelhamento da pré-visualização frontal
                 if (usandoCameraFrontal) {
                     video.classList.add('espelhado');
                     btnFlash.style.display = 'none';
@@ -486,17 +480,19 @@
 
         function fecharToast() { statusToast.style.display = 'none'; }
 
+        // ==========================================
+        // CAPTURA EM ALTA DEFINIÇÃO (HD)
+        // ==========================================
         function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
             video.style.opacity = '0.3';
             setTimeout(() => { video.style.opacity = '1'; }, 150);
 
-            mostrarToast("Salvando no Álbum... ⏳");
+            mostrarToast("Salvando em Alta Definição...");
 
-            const larguraMaxima = 600;
-            const proporcao = video.videoHeight / video.videoWidth;
-            canvas.width = larguraMaxima;
-            canvas.height = larguraMaxima * proporcao;
+            // Utiliza a resolução real do vídeo vinda da câmera do celular
+            canvas.width = video.videoWidth || 1280;
+            canvas.height = video.videoHeight || 720;
             
             const ctx = canvas.getContext('2d');
             if (usandoCameraFrontal) {
@@ -505,7 +501,8 @@
             }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.5);
+            // Qualidade aumentada de 0.5 para 0.88 para garantir nitidez profissional
+            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.88);
 
             db.collection("album_coletivo").add({
                 imagemTexto: fotoBase64,
@@ -604,7 +601,6 @@
                 card.className = 'album-card';
                 card.onclick = () => { autorSelecionado = autor; atualizarInterfaceGaleria(); };
                 
-                // Ícone em SVG para o card (Pasta Aberta se revelado, Cadeado se bloqueado)
                 const iconeSvg = revelado 
                     ? '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>'
                     : '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
