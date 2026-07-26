@@ -34,11 +34,9 @@
 
         h1, h2 { font-family: 'Great Vibes', cursive; color: var(--rosa); text-align: center; font-weight: normal;}
         
-        /* Controle absoluto de telas (Garante que só uma aparece por vez) */
         .screen { display: none; width: 100%; height: 100dvh; position: absolute; top: 0; left: 0; overflow-y: auto; }
         .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* Tela de Câmera e Galeria precisam descontar o menu inferior */
         #camera-screen.active, #gallery-screen.active { 
             height: calc(100dvh - 75px); 
             justify-content: flex-start;
@@ -46,7 +44,7 @@
         }
         #camera-screen.active { justify-content: center; overflow: hidden; }
 
-        /* === TELA ADMIN (GERAR LINK) === */
+        /* === TELA ADMIN === */
         .admin-box {
             background: rgba(10, 17, 40, 0.95); border: 1px solid var(--rosa);
             padding: 30px 20px; border-radius: 24px; text-align: center; width: 90%; max-width: 380px;
@@ -66,7 +64,7 @@
         #link-gerado-container { display: none; margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
         .link-text { font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px; word-break: break-all; color: var(--rosa); margin-bottom: 12px; border: 1px dashed rgba(244, 172, 183, 0.3);}
 
-        /* === TELA LOGIN CONVIDADO === */
+        /* === TELA LOGIN === */
         .login-box {
             background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(224, 224, 224, 0.15);
             padding: 40px 25px; border-radius: 24px; backdrop-filter: blur(15px);
@@ -107,13 +105,13 @@
         }
 
         /* === TELA GALERIA === */
-        #gallery-screen { padding: 30px 20px; }
-        .gallery-header { margin-bottom: 25px; text-align: center; width: 100%; }
-        .timer-revelacao { font-size: 0.85rem; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 10px; }
+        #gallery-screen { padding: 25px 15px; }
+        .gallery-header { margin-bottom: 20px; text-align: center; width: 100%; }
+        .timer-revelacao { font-size: 0.8rem; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--rosa); display: inline-block; margin-top: 8px; letter-spacing: 0.5px;}
         
-        .grid-galeria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; padding-bottom: 40px; }
+        .grid-galeria { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; padding-bottom: 40px; }
         .foto-card {
-            position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; 
+            position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 14px; overflow: hidden; 
             background: #111; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
         .foto-card img { width: 100%; height: 100%; object-fit: cover; transition: filter 0.5s ease; }
@@ -123,17 +121,21 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); z-index: 2;
         }
         .lock-icon { font-size: 2rem; margin-bottom: 5px; }
-        .foto-autor { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px #000;}
+        .foto-autor { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; text-shadow: 1px 1px 3px #000;}
 
+        /* Botões Luxuosos Estilizados */
         .foto-actions {
-            position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 10px; 
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; justify-content: space-around;
+            position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px 8px; 
+            background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); display: flex; justify-content: space-around; gap: 6px;
         }
-        .btn-icon {
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; 
-            width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); font-size: 1.2rem; transition: background 0.3s ease; text-decoration: none;
+        .btn-lux {
+            background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff; 
+            padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 5px;
+            cursor: pointer; backdrop-filter: blur(8px); font-size: 0.75rem; font-weight: 500; 
+            font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s ease;
         }
-        .btn-icon:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa);}
+        .btn-lux:active { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); transform: scale(0.95); }
+
         .empty-state { text-align: center; color: var(--prata-escuro); margin-top: 50px; font-size: 0.9rem; grid-column: span 2;}
 
         /* === MENU INFERIOR === */
@@ -192,7 +194,7 @@
     <div id="gallery-screen" class="screen">
         <div class="gallery-header">
             <h2 style="font-size: 2.5rem;">Álbum da Festa</h2>
-            <div class="timer-revelacao" id="timer-display">Calculando...</div>
+            <div class="timer-revelacao" id="timer-display">Calculando tempo...</div>
         </div>
         <div class="grid-galeria" id="grid-fotos">
             <div class="empty-state">Carregando fotos...</div>
@@ -234,6 +236,7 @@
         const canvas = document.getElementById('canvas-escondido');
         const statusToast = document.getElementById('status-toast');
         const btnCaptura = document.getElementById('btn-tirar-foto');
+        let timerInterval = null;
 
         // ==========================================
         // CONTROLE DE TELAS POR URL
@@ -245,10 +248,8 @@
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
 
             if (!dataParam) {
-                // Sem data na URL = Abre painel admin isolado
                 document.getElementById('admin-screen').classList.add('active');
             } else {
-                // Com data na URL = Vai direto para o login do convidado
                 timestampRevelacao = new Date(dataParam).getTime();
                 document.getElementById('login-screen').classList.add('active');
             }
@@ -296,11 +297,13 @@
                 document.getElementById('camera-screen').classList.add('active');
                 document.getElementById('nav-camera').classList.add('active');
                 iniciarCamera();
+                pararContadorTempoReal();
             } else {
                 document.getElementById('gallery-screen').classList.add('active');
                 document.getElementById('nav-galeria').classList.add('active');
                 pararCamera();
                 atualizarInterfaceGaleria();
+                iniciarContadorTempoReal(); // Ativa o relógio rodando segundo a segundo
             }
         }
 
@@ -353,6 +356,9 @@
             });
         }
 
+        // ==========================================
+        // CONTAGEM REGRESSIVA EM TEMPO REAL (SEGUNDO A SEGUNDO)
+        // ==========================================
         function checarRevelacao() {
             const agora = new Date().getTime();
             const faltam = timestampRevelacao - agora;
@@ -361,16 +367,37 @@
 
             if (faltam <= 0) {
                 timerEl.innerText = "✨ ÁLBUM REVELADO ✨";
-                timerEl.style.borderColor = "#4caf50"; timerEl.style.color = "#4caf50";
+                timerEl.style.borderColor = "#4caf50"; 
+                timerEl.style.color = "#4caf50";
                 menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🖼️</span> Galeria';
                 return true; 
             } else {
                 const horas = Math.floor(faltam / (1000 * 60 * 60));
                 const min = Math.floor((faltam % (1000 * 60 * 60)) / (1000 * 60));
-                timerEl.innerText = `Revelação em: ${horas}h e ${min}m 🔒`;
+                const seg = Math.floor((faltam % (1000 * 60)) / 1000);
+                
+                // Formato elegante com segundos rodando
+                timerEl.innerText = `Revelação em: ${horas}h ${min}m ${seg}s 🔒`;
                 menuIcon.innerHTML = '<span style="font-size: 1.1rem;">🔒</span> Secreta';
                 return false; 
             }
+        }
+
+        function iniciarContadorTempoReal() {
+            pararContadorTempoReal();
+            timerInterval = setInterval(() => {
+                if(document.getElementById('gallery-screen').classList.contains('active')) {
+                    const reveladoAgora = checarRevelacao();
+                    // Se virou o tempo exato agora, atualiza a galeria para remover o blur na hora
+                    if(reveladoAgora && document.querySelector('.foto-card.bloqueada')) {
+                        atualizarInterfaceGaleria();
+                    }
+                }
+            }, 1000); // Atualiza a cada 1 segundo em ponto
+        }
+
+        function pararContadorTempoReal() {
+            if(timerInterval) { clearInterval(timerInterval); }
         }
 
         let cacheFotos = [];
@@ -411,10 +438,15 @@
                         <div class="foto-autor">Por: ${dados.autor}</div>
                     </div>`;
                 } else {
+                    // Botões de luxo atualizados com direcionamento otimizado para galeria
                     htmlCard += `
                     <div class="foto-actions">
-                        <div class="btn-icon" onclick="baixarFotoForcado('${dados.imagemTexto}', '${nomeArquivo}')" title="Baixar">⬇️</div>
-                        <div class="btn-icon" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')" title="Compartilhar">📤</div>
+                        <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
+                            <span>⬇️</span> Baixar
+                        </button>
+                        <button class="btn-lux" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')">
+                            <span>📤</span> Enviar
+                        </button>
                     </div>`;
                 }
                 div.innerHTML = htmlCard;
@@ -422,28 +454,53 @@
             });
         }
 
-        setInterval(() => {
-            if(document.getElementById('gallery-screen').classList.contains('active')) { checarRevelacao(); atualizarInterfaceGaleria(); }
-        }, 60000);
-
-        function baixarFotoForcado(dataUrl, nomeArquivo) {
-            fetch(dataUrl).then(res => res.blob()).then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.style.display = 'none'; link.href = url; link.download = nomeArquivo;
-                document.body.appendChild(link); link.click();
-                window.URL.revokeObjectURL(url); document.body.removeChild(link);
-            }).catch(() => alert("Use o botão 📤 Compartilhar para salvar."));
+        // ==========================================
+        // DOWNLOAD DIRECIONADO PARA O ROLO DA CÂMERA
+        // ==========================================
+        function baixarFotoGaleria(dataUrl, nomeArquivo) {
+            fetch(dataUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = nomeArquivo;
+                    // Força o comportamento de clique simulado no DOM
+                    document.body.appendChild(link);
+                    link.click();
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(link);
+                    }, 100);
+                })
+                .catch(() => {
+                    // Fallback se o navegador bloquear o blob direto
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = nomeArquivo;
+                    a.target = '_blank';
+                    a.click();
+                });
         }
 
         async function compartilharFoto(dataUrl, nomeArquivo) {
             try {
-                const res = await fetch(dataUrl); const blob = await res.blob();
+                const res = await fetch(dataUrl); 
+                const blob = await res.blob();
                 const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
+                
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: 'Festa Ana Julia', text: 'Olha que foto sensacional da festa! ✨' });
-                } else { alert("Use o botão ⬇️ para baixar e enviar pela galeria."); }
-            } catch (error) { console.log('Compartilhamento cancelado'); }
+                    await navigator.share({ 
+                        files: [file], 
+                        title: '15 Anos Ana Julia', 
+                        text: 'Olha que foto sensacional da festa! ✨' 
+                    });
+                } else { 
+                    baixarFotoGaleria(dataUrl, nomeArquivo);
+                }
+            } catch (error) { 
+                console.log('Compartilhamento cancelado ou indisponível'); 
+            }
         }
     </script>
 </body>
