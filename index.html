@@ -27,7 +27,6 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* SCROLLBAR CUSTOMIZADA E LUXUOSA */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(244, 172, 183, 0.3); border-radius: 10px; }
@@ -39,7 +38,6 @@
             position: relative;
         }
 
-        /* LUZES AMBIENTES PARA TIRAR O ASPECTO VAZIO */
         .ambient-light-1 {
             position: absolute; top: -10%; left: -10%; width: 50vw; height: 50vw;
             background: radial-gradient(circle, rgba(244, 172, 183, 0.15) 0%, transparent 70%);
@@ -63,10 +61,9 @@
         }
         #camera-screen.active { justify-content: center; overflow: hidden; background: #000; }
 
-        /* TOAST GLOBAL (AVISOS) */
         .status-toast {
             position: fixed; top: 25px; left: 50%; transform: translateX(-50%);
-            background: rgba(4, 8, 20, 0.85); padding: 12px 25px; border-radius: 30px; 
+            background: rgba(4, 8, 20, 0.9); padding: 12px 25px; border-radius: 30px; 
             border: 1px solid var(--rosa); font-size: 0.75rem; display: none; z-index: 9999; 
             color: #fff; font-weight: 600; backdrop-filter: blur(15px); letter-spacing: 1.5px; 
             text-transform: uppercase; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -92,7 +89,8 @@
         .date-input:focus { border-color: var(--rosa); box-shadow: 0 0 15px var(--rosa-glow); background: rgba(0,0,0,0.6);}
         .date-input::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; opacity: 0.6; }
 
-        #link-gerado-container { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); }
+        #painel-geracao { display: block; }
+        #link-gerado-container { display: none; margin-top: 5px; }
         .link-text { font-size: 0.75rem; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 12px; word-break: break-all; color: var(--rosa); margin-bottom: 15px; border: 1px dashed rgba(244, 172, 183, 0.4);}
 
         /* === TELA LOGIN VIP === */
@@ -281,11 +279,9 @@
 </head>
 <body>
 
-    <!-- LUZES AMBIENTES GLOBAIS -->
     <div class="ambient-light-1"></div>
     <div class="ambient-light-2"></div>
 
-    <!-- TOAST GLOBAL (AVISOS RÁPIDOS) -->
     <div id="status-toast" class="status-toast"></div>
 
     <!-- 0. PAINEL ADMIN -->
@@ -294,8 +290,10 @@
             <h2>Painel da Festa</h2>
             <p id="admin-desc">Escolha o dia e horário em que os álbuns coletivos serão revelados para você e para os convidados.</p>
             
-            <input type="datetime-local" id="data-input" class="date-input">
-            <button id="btn-gerar" class="btn-acao btn-rosa" onclick="gerarLink()">Gerar Link Mágico</button>
+            <div id="painel-geracao">
+                <input type="datetime-local" id="data-input" class="date-input">
+                <button class="btn-acao btn-rosa" onclick="gerarLink()">Gerar Link Mágico</button>
+            </div>
 
             <div id="link-gerado-container">
                 <div class="link-text" id="link-text"></div>
@@ -325,7 +323,6 @@
 
     <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
-        
         <div class="camera-controls-top">
             <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
                 <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
@@ -457,12 +454,8 @@
             const urlLimpa = window.location.href.split('?')[0];
             const linkFinal = `${urlLimpa}?data=${dataEscolhida}`;
             
-            // Oculta os itens iniciais
-            document.getElementById('data-input').style.display = 'none';
-            document.getElementById('btn-gerar').style.display = 'none';
-            
-            // Atualiza os textos
-            document.getElementById('admin-desc').innerHTML = "Tudo certo!<br><br>Gere o seu QR Code com o link abaixo ou envie diretamente aos convidados.";
+            document.getElementById('painel-geracao').style.display = 'none';
+            document.getElementById('admin-desc').innerHTML = "Tudo certo! Gere o seu QR Code com o link abaixo ou envie diretamente aos convidados.";
             document.getElementById('link-text').innerText = linkFinal;
             document.getElementById('link-gerado-container').style.display = 'block';
         }
