@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Câmera - 15 Anos Ana Julia</title>
     
     <meta property="og:title" content="Câmera Exclusiva 📸">
@@ -11,6 +11,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Firebase SDKs (Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
@@ -30,10 +31,17 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(244, 172, 183, 0.3); border-radius: 10px; }
 
-        body {
-            background-color: var(--azul-fundo); font-family: 'Montserrat', sans-serif;
-            color: var(--prata); display: flex; flex-direction: column; width: 100vw; height: 100dvh; overflow: hidden;
-            position: relative;
+        /* CORREÇÃO DEFINITIVA DE ALTURA PARA ANDROID E IOS */
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            background-color: var(--azul-fundo);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--prata);
+            overflow: hidden;
+            position: fixed;
+            inset: 0;
         }
 
         .ambient-light-1 {
@@ -49,23 +57,44 @@
 
         h1, h2 { font-family: 'Great Vibes', cursive; color: var(--rosa); text-align: center; font-weight: normal; z-index: 1; position: relative;}
         
-        .screen { display: none; width: 100%; height: 100dvh; position: absolute; top: 0; left: 0; overflow-y: auto; z-index: 5;}
-        .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* GERENCIAMENTO DE TELAS COM POSICIONAMENTO ABSOLUTO E CLIPPING PERFEITO */
+        .screen { 
+            display: none; 
+            width: 100%; 
+            height: 100%;
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 5;
+            overflow: hidden;
+        }
+        .screen.active { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+        }
 
         #admin-screen.active, #login-screen.active {
             justify-content: center;
+            align-items: center;
             padding: 20px;
+            overflow-y: auto;
         }
 
         #camera-screen.active { 
-            height: calc(100dvh - 75px); 
+            height: calc(100% - 75px);
+            height: calc(100dvh - 75px);
             justify-content: center; 
             align-items: center;
-            overflow: hidden; 
             background: #000; 
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         #gallery-screen.active {
+            height: 100%;
             height: 100dvh;
             justify-content: flex-start;
             padding-bottom: 75px; 
@@ -138,10 +167,15 @@
         .btn-acao:active { transform: translateY(2px); }
         .btn-rosa { background: linear-gradient(135deg, #f4acb7 0%, #d88996 100%); color: #000; box-shadow: 0 8px 25px rgba(244, 172, 183, 0.4);}
 
-        /* === TELA CÂMERA === */
+        /* === TELA CÂMERA BLINDADA CONTRA LINHAS PRETAS === */
         #video-preview { 
-            width: 100%; height: 100%; object-fit: cover; 
-            position: absolute; top: 0; left: 0; z-index: 1;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            z-index: 1;
         }
         #video-preview.espelhado { transform: scaleX(-1); }
         
@@ -160,7 +194,7 @@
         .camera-btn-top.ativo { background: var(--rosa); color: var(--azul-escuro); border-color: var(--rosa); }
 
         .capture-wrapper { 
-            position: absolute; bottom: 35px; left: 0; width: 100%; 
+            position: absolute; bottom: 25px; left: 0; width: 100%; 
             display: flex; justify-content: center; z-index: 20; 
         }
         .capture-btn {
@@ -249,7 +283,7 @@
 
         /* === LIGHTBOX === */
         #lightbox-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
             background: rgba(0, 0, 0, 0.95); z-index: 1000;
             display: none; flex-direction: column; justify-content: center; align-items: center;
             padding: 20px; backdrop-filter: blur(15px);
@@ -277,7 +311,7 @@
 
         /* === MODAL CUSTOMIZADO === */
         .custom-alert-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
             background: rgba(0, 0, 0, 0.85); z-index: 2000;
             display: none; justify-content: center; align-items: center;
             backdrop-filter: blur(15px); padding: 20px;
@@ -299,6 +333,7 @@
 
     <div id="status-toast" class="status-toast"></div>
 
+    <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
@@ -316,6 +351,7 @@
         </div>
     </div>
 
+    <!-- 1. TELA DE LOGIN VIP -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <div class="vip-badge">
@@ -334,6 +370,7 @@
         </div>
     </div>
 
+    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div class="camera-controls-top">
             <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
@@ -344,13 +381,14 @@
             </button>
         </div>
 
-        <video id="video-preview" autoplay playsinline></video>
+        <video id="video-preview" autoplay playsinline muted></video>
         <div class="capture-wrapper">
             <button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button>
         </div>
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
+    <!-- 3. TELA DA GALERIA -->
     <div id="gallery-screen" class="screen">
         <div class="app-header-sticky">
             <h2>Álbuns da Festa</h2>
@@ -367,11 +405,13 @@
         </div>
     </div>
 
+    <!-- MODAL DE TELA CHEIA (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharLightbox(event)">
         <button class="lightbox-close" onclick="fecharLightbox(event)">✕</button>
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
+    <!-- MODAL CUSTOMIZADO (ALERTA DE LUXO) -->
     <div id="custom-alert-modal" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <h3 id="custom-alert-title">Aviso</h3>
@@ -380,6 +420,7 @@
         </div>
     </div>
 
+    <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
             <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>
