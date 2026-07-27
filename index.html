@@ -218,6 +218,22 @@
         }
         .nav-item svg { width: 18px; height: 18px; fill: currentColor; }
         .nav-item.active { background: rgba(244, 172, 183, 0.1); color: var(--rosa); border: 1px solid rgba(244, 172, 183, 0.2);}
+
+        /* === MODAL CUSTOMIZADO (SUBSTITUTO DOS ALERTS PADRÕES) === */
+        .custom-alert-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background: rgba(0, 0, 0, 0.85); z-index: 2000;
+            display: none; justify-content: center; align-items: center;
+            backdrop-filter: blur(10px); padding: 20px;
+        }
+        .custom-alert-overlay.active { display: flex; }
+        .custom-alert-box {
+            background: rgba(10, 17, 40, 0.95); border: 1px solid var(--rosa);
+            border-radius: 20px; padding: 25px 20px; text-align: center; width: 100%; max-width: 320px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        }
+        .custom-alert-box h3 { font-family: 'Great Vibes', cursive; font-size: 2.2rem; color: var(--rosa); margin-bottom: 10px; }
+        .custom-alert-box p { font-size: 0.85rem; color: var(--prata); margin-bottom: 25px; line-height: 1.5; font-family: 'Montserrat', sans-serif;}
     </style>
 </head>
 <body>
@@ -291,6 +307,15 @@
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
+    <!-- MODAL CUSTOMIZADO (ALERTA DE LUXO) -->
+    <div id="custom-alert-modal" class="custom-alert-overlay">
+        <div class="custom-alert-box">
+            <h3 id="custom-alert-title">Aviso</h3>
+            <p id="custom-alert-message">Mensagem de aviso aqui.</p>
+            <button class="btn-acao btn-rosa" onclick="fecharAlerta()">Entendi</button>
+        </div>
+    </div>
+
     <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
@@ -333,6 +358,16 @@
         const btnSwitch = document.getElementById('btn-camera-switch');
         let timerInterval = null;
 
+        // Função Global de Alerta de Luxo
+        function mostrarAlerta(mensagem, titulo = "Atenção") {
+            document.getElementById('custom-alert-title').innerText = titulo;
+            document.getElementById('custom-alert-message').innerText = mensagem;
+            document.getElementById('custom-alert-modal').classList.add('active');
+        }
+        function fecharAlerta() {
+            document.getElementById('custom-alert-modal').classList.remove('active');
+        }
+
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
@@ -357,7 +392,10 @@
 
         function gerarLink() {
             const dataEscolhida = document.getElementById('data-input').value;
-            if(!dataEscolhida) { alert("Por favor, selecione a data e o horário da revelação!"); return; }
+            if(!dataEscolhida) { 
+                mostrarAlerta("Por favor, selecione a data e o horário em que o álbum será revelado!", "Data Inválida"); 
+                return; 
+            }
 
             const urlLimpa = window.location.href.split('?')[0];
             const linkFinal = `${urlLimpa}?data=${dataEscolhida}`;
@@ -368,14 +406,20 @@
 
         function copiarLink() {
             const link = document.getElementById('link-text').innerText;
-            navigator.clipboard.writeText(link).then(() => { alert("Link copiado!"); });
+            navigator.clipboard.writeText(link).then(() => { 
+                mostrarToast("Link copiado com sucesso!", "#4caf50");
+                setTimeout(fecharToast, 2000);
+            });
         }
 
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
             const sobrenome = document.getElementById('input-sobrenome').value.trim();
             
-            if(!nome) { alert("Por favor, digite seu nome!"); return; }
+            if(!nome || !sobrenome) { 
+                mostrarAlerta("Por favor, preencha o seu nome e sobrenome para continuar.", "Identificação"); 
+                return; 
+            }
             
             nomeCompletoConvidado = `${nome} ${sobrenome}`.trim();
             localStorage.setItem('anajulia_convidado_completo', nomeCompletoConvidado);
@@ -436,7 +480,9 @@
                         btnFlash.style.display = 'flex';
                     }
                 }
-            } catch (err) { alert("Erro ao acessar a câmera. Verifique as permissões."); }
+            } catch (err) { 
+                mostrarAlerta("Não conseguimos acessar sua câmera. Certifique-se de permitir o acesso nas configurações do navegador.", "Câmera Bloqueada"); 
+            }
         }
 
         function pararCamera() {
@@ -457,11 +503,13 @@
             iniciarCamera();
         }
 
+        // Sistema de duplo disparo automático do flash (1 único clique para o usuário)
         async function toggleFlash() {
             if (!trackDeVideo) return;
             try {
                 flashLigado = !flashLigado;
                 await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
+                
                 if (flashLigado) {
                     btnFlash.classList.add('ativo');
                     mostrarToast("Flash ativado", "#4caf50");
@@ -470,15 +518,20 @@
                     btnFlash.classList.remove('ativo');
                 }
             } catch (err) {
+                // Se falhar, o código tenta forçar imediatamente a segunda chamada
                 try {
-                    await trackDeVideo.applyConstraints({ advanced: [{ torch: true }] });
-                    flashLigado = true;
-                    btnFlash.classList.add('ativo');
-                    mostrarToast("Toque novamente para estabilizar", "#f4acb7");
-                    setTimeout(fecharToast, 1500);
+                    await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
+                    if (flashLigado) {
+                        btnFlash.classList.add('ativo');
+                        mostrarToast("Flash ativado", "#4caf50");
+                        setTimeout(fecharToast, 1200);
+                    } else {
+                        btnFlash.classList.remove('ativo');
+                    }
                 } catch (e) {
-                    alert("Seu dispositivo não suporta flash por navegador.");
                     flashLigado = false;
+                    btnFlash.classList.remove('ativo');
+                    mostrarAlerta("O hardware do seu celular não suporta a função de flash através de navegadores web.", "Flash Indisponível");
                 }
             }
         }
@@ -491,15 +544,11 @@
 
         function fecharToast() { statusToast.style.display = 'none'; }
 
-        // ==========================================
-        // CAPTURA IMEDIATA E SUPER RÁPIDA
-        // ==========================================
         function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
             video.style.opacity = '0.3';
             setTimeout(() => { video.style.opacity = '1'; }, 150);
 
-            // Mensagem instantânea e limpa
             mostrarToast("Foto salva!", "#4caf50");
             setTimeout(fecharToast, 1500);
 
@@ -515,7 +564,6 @@
 
             const fotoBase64 = canvas.toDataURL('image/jpeg', 0.90);
 
-            // Gravação em background sem travar a experiência do usuário
             db.collection("album_coletivo").add({
                 imagemTexto: fotoBase64,
                 autor: nomeCompletoConvidado,
@@ -523,8 +571,7 @@
             }).then(() => {
                 btnCaptura.style.pointerEvents = 'auto';
             }).catch(() => {
-                mostrarToast("Erro de conexão.", "red");
-                setTimeout(fecharToast, 2000);
+                mostrarAlerta("Verifique sua conexão com a internet. A foto não pôde ser enviada.", "Erro de Conexão");
                 btnCaptura.style.pointerEvents = 'auto';
             });
         }
