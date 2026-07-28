@@ -742,7 +742,7 @@
 
         function fecharToast() { statusToast.style.display = 'none'; }
 
-        function tirarFoto() {
+                function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
             
             // Adicionada a classe de animação do botão
@@ -758,17 +758,31 @@
             mostrarToast("Foto salva!", "#e07a93");
             setTimeout(fecharToast, 1500);
 
-            canvas.width = video.videoWidth || 1280;
-            canvas.height = video.videoHeight || 720;
+            // === A MÁGICA DA COMPRESSÃO ACONTECE AQUI ===
+            const MAX_WIDTH = 800; // Limita a largura da foto para não travar
+            let largura = video.videoWidth || 1280;
+            let altura = video.videoHeight || 720;
+
+            // Calcula a proporção correta para não distorcer a imagem
+            if (largura > MAX_WIDTH) {
+                altura = Math.floor(altura * (MAX_WIDTH / largura));
+                largura = MAX_WIDTH;
+            }
+
+            canvas.width = largura;
+            canvas.height = altura;
             
             const ctx = canvas.getContext('2d');
             if (usandoCameraFrontal) {
                 ctx.translate(canvas.width, 0);
                 ctx.scale(-1, 1);
             }
+            
+            // Desenha a imagem no canvas já com o tamanho reduzido
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.90);
+            // Reduz a qualidade do JPEG para 60% (0.60) para ficar super leve
+            const fotoBase64 = canvas.toDataURL('image/jpeg', 0.60);
 
             db.collection("album_coletivo").add({
                 imagemTexto: fotoBase64,
@@ -778,8 +792,10 @@
                 btnCaptura.style.pointerEvents = 'auto';
             }).catch(() => {
                 btnCaptura.style.pointerEvents = 'auto';
+                mostrarAlerta("Erro ao salvar a foto. Tente novamente.", "Ops!");
             });
         }
+
 
         function checarRevelacao() {
             const agora = new Date().getTime();
