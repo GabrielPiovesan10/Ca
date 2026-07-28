@@ -564,7 +564,7 @@
                     nomeCompletoConvidado = nomeSalvo;
                     document.getElementById('bottom-menu').style.display = 'flex';
                     mudarAba('camera');
-                    iniciarEscutaGaleria();
+                    // Inicia escuta somente na aba galeria agora
                 } else {
                     document.getElementById('login-screen').classList.add('active');
                 }
@@ -617,7 +617,6 @@
             document.getElementById('tutorial-modal').classList.remove('active');
             document.getElementById('bottom-menu').style.display = 'flex';
             mudarAba('camera');
-            iniciarEscutaGaleria();
         }
 
         function mudarAba(aba) {
@@ -636,7 +635,9 @@
                 document.getElementById('gallery-screen').classList.add('active');
                 document.getElementById('nav-galeria').classList.add('active');
                 pararCamera();
-                atualizarInterfaceGaleria();
+                
+                // MUDANÇA: Toda vez que abrir a aba Galeria, atualiza e recarrega as fotos novas da festa
+                iniciarEscutaGaleria();
                 iniciarContadorTempoReal();
             }
         }
@@ -742,7 +743,7 @@
 
         function fecharToast() { statusToast.style.display = 'none'; }
 
-                function tirarFoto() {
+        function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
             
             // Adicionada a classe de animação do botão
@@ -820,14 +821,13 @@
             }
         }
         
-        // Função do Efeito de Suspense Adicionada
         function dispararEfeitoSuspense() {
             fazendoEfeitoSuspense = true;
             const overlay = document.getElementById('suspense-overlay');
             const numberEl = document.getElementById('suspense-number');
             
             overlay.style.display = 'flex';
-            setTimeout(() => { overlay.style.opacity = '1'; }, 10); // transição suave
+            setTimeout(() => { overlay.style.opacity = '1'; }, 10);
 
             let contagem = 3;
             numberEl.innerText = contagem;
@@ -840,7 +840,6 @@
                     clearInterval(intervalo);
                     numberEl.innerText = "✨";
                     
-                    // Finaliza e atualiza galeria
                     setTimeout(() => {
                         overlay.style.opacity = '0';
                         setTimeout(() => {
@@ -859,7 +858,6 @@
                 if(document.getElementById('gallery-screen').classList.contains('active')) {
                     const reveladoAgora = checarRevelacao();
                     
-                    // Identifica se virou para 0 enquanto o app estava aberto
                     if (estavaBloqueado === null) {
                         estavaBloqueado = !reveladoAgora;
                     }
@@ -879,19 +877,85 @@
             if(timerInterval) { clearInterval(timerInterval); }
         }
 
+        // =========================================================
+        // MUDANÇAS PARA ROLAGEM INFINITA E PAGINAÇÃO (LAZY LOADING)
+        // =========================================================
+        
         let cacheFotos = [];
+        let lastVisible = null;
+        let carregandoMais = false;
+        let temMaisFotos = true;
 
         function iniciarEscutaGaleria() {
+            cacheFotos = [];
+            lastVisible = null;
+            temMaisFotos = true;
+            document.getElementById('container-albuns').innerHTML = `
+                <div class="empty-state">
+                    <p>Carregando álbuns...</p>
+                </div>`; // Mostra um feedback temporário enquanto puxa as fotos novas
+            carregarPrimeiraPagina();
+        }
+
+        function carregarPrimeiraPagina() {
             db.collection("album_coletivo")
                 .orderBy("timestamp", "desc")
-                .onSnapshot((querySnapshot) => {
-                    cacheFotos = [];
-                    querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
+                .limit(30) // Traz só 30 no início
+                .get()
+                .then((querySnapshot) => {
+                    cacheFotos = []; 
+                    if (!querySnapshot.empty) {
+                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
+                    }
                     if(document.getElementById('gallery-screen').classList.contains('active')) {
                         atualizarInterfaceGaleria();
                     }
                 });
         }
+
+        function carregarMaisFotos() {
+            if (carregandoMais || !temMaisFotos || !lastVisible) return;
+            carregandoMais = true;
+
+            db.collection("album_coletivo")
+                .orderBy("timestamp", "desc")
+                .startAfter(lastVisible)
+                .limit(30) // Puxa blocos de 30 a cada rolagem
+                .get()
+                .then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
+                        if(document.getElementById('gallery-screen').classList.contains('active')) {
+                            atualizarInterfaceGaleria();
+                        }
+                    } else {
+                        temMaisFotos = false; // Acabaram as fotos do banco
+                    }
+                    carregandoMais = false;
+                })
+                .catch(() => {
+                    carregandoMais = false;
+                });
+        }
+
+        // Fica de olho quando a pessoa rola a tela para baixo para puxar mais
+        document.addEventListener("DOMContentLoaded", () => {
+            const scrollArea = document.querySelector('.gallery-scroll-area');
+            if (scrollArea) {
+                scrollArea.addEventListener('scroll', () => {
+                    // Quando a pessoa chegar a 150 pixels do final, puxa automaticamente
+                    if (scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 150) {
+                        carregarMaisFotos();
+                    }
+                });
+            }
+        });
+
+        // =========================================================
+        // FIM DAS MUDANÇAS DE ROLAGEM
+        // =========================================================
 
         function atualizarInterfaceGaleria() {
             const revelado = checarRevelacao();
