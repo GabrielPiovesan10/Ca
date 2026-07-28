@@ -207,12 +207,20 @@
             position: absolute; bottom: 25px; left: 0; width: 100%; 
             display: flex; justify-content: center; z-index: 20; 
         }
+        
+        /* Modificação: Animação do botão de captura */
         .capture-btn {
             width: 75px; height: 75px; background: rgba(255, 255, 255, 0.2); border: 4px solid #fff;
             border-radius: 50%; cursor: pointer; backdrop-filter: blur(8px);
-            box-shadow: 0 0 25px rgba(0,0,0,0.5); transition: transform 0.1s;
+            box-shadow: 0 0 25px rgba(0,0,0,0.5); transition: all 0.2s ease-out;
         }
         .capture-btn:active { background: #fff; transform: scale(0.85); }
+        .capture-btn.clicked {
+            background: var(--rosa-principal);
+            border-color: var(--rosa-claro);
+            transform: scale(0.85);
+            box-shadow: 0 0 30px var(--rosa-principal);
+        }
 
         /* === TELA GALERIA === */
         .app-header-sticky {
@@ -333,11 +341,39 @@
         }
         .custom-alert-box h3 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; color: var(--rosa-principal); margin-bottom: 15px; }
         .custom-alert-box p { font-size: 0.9rem; color: var(--texto-principal); margin-bottom: 25px; line-height: 1.6; font-family: 'Montserrat', sans-serif;}
+
+        /* === MODAL DE SUSPENSE E REVELAÇÃO === */
+        #suspense-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background: rgba(0, 0, 0, 0.93); z-index: 9999;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.8s ease; backdrop-filter: blur(15px);
+        }
+        .suspense-text {
+            color: #fff; font-family: 'Great Vibes', cursive; font-size: 3.5rem; 
+            margin-bottom: 20px; color: var(--rosa-principal);
+        }
+        #suspense-number {
+            font-size: 8rem; color: #fff; font-family: 'Montserrat', sans-serif;
+            font-weight: 700; text-shadow: 0 0 30px rgba(224, 122, 147, 0.8);
+            animation: pulse-number 1s infinite;
+        }
+        @keyframes pulse-number {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.8); opacity: 0.6; }
+        }
     </style>
 </head>
 <body>
 
     <div id="status-toast" class="status-toast"></div>
+
+    <!-- OVERLAY DE SUSPENSE -->
+    <div id="suspense-overlay">
+        <div class="suspense-text">Revelando...</div>
+        <div id="suspense-number">3</div>
+    </div>
 
     <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
@@ -491,6 +527,10 @@
         let timestampRevelacao = 0;
         let autorSelecionado = null;
         let trocandoCamera = false;
+        
+        // Variáveis para controle do Efeito de Suspense
+        let estavaBloqueado = null;
+        let fazendoEfeitoSuspense = false;
 
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
@@ -569,7 +609,6 @@
             nomeCompletoConvidado = `${nome} ${sobrenome}`.trim();
             localStorage.setItem('anajulia_convidado_completo', nomeCompletoConvidado);
             
-            // Em vez de ir direto, exibe o tutorial explicativo bonitinho
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('tutorial-modal').classList.add('active');
         }
@@ -705,8 +744,16 @@
 
         function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
+            
+            // Adicionada a classe de animação do botão
+            btnCaptura.classList.add('clicked');
+            
             video.style.opacity = '0.3';
-            setTimeout(() => { video.style.opacity = '1'; }, 150);
+            setTimeout(() => { 
+                video.style.opacity = '1'; 
+                // Remove a animação do botão após um tempinho
+                btnCaptura.classList.remove('clicked');
+            }, 150);
 
             mostrarToast("Foto salva!", "#e07a93");
             setTimeout(fecharToast, 1500);
@@ -756,15 +803,58 @@
                 return false; 
             }
         }
+        
+        // Função do Efeito de Suspense Adicionada
+        function dispararEfeitoSuspense() {
+            fazendoEfeitoSuspense = true;
+            const overlay = document.getElementById('suspense-overlay');
+            const numberEl = document.getElementById('suspense-number');
+            
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.style.opacity = '1'; }, 10); // transição suave
+
+            let contagem = 3;
+            numberEl.innerText = contagem;
+
+            const intervalo = setInterval(() => {
+                contagem--;
+                if (contagem > 0) {
+                    numberEl.innerText = contagem;
+                } else {
+                    clearInterval(intervalo);
+                    numberEl.innerText = "✨";
+                    
+                    // Finaliza e atualiza galeria
+                    setTimeout(() => {
+                        overlay.style.opacity = '0';
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            fazendoEfeitoSuspense = false;
+                            atualizarInterfaceGaleria();
+                        }, 800);
+                    }, 800);
+                }
+            }, 1000);
+        }
 
         function iniciarContadorTempoReal() {
             pararContadorTempoReal();
             timerInterval = setInterval(() => {
                 if(document.getElementById('gallery-screen').classList.contains('active')) {
                     const reveladoAgora = checarRevelacao();
-                    if(reveladoAgora && document.querySelector('.foto-card.bloqueada')) {
+                    
+                    // Identifica se virou para 0 enquanto o app estava aberto
+                    if (estavaBloqueado === null) {
+                        estavaBloqueado = !reveladoAgora;
+                    }
+
+                    if (estavaBloqueado === true && reveladoAgora === true && !fazendoEfeitoSuspense) {
+                        dispararEfeitoSuspense();
+                    } else if (reveladoAgora && document.querySelector('.foto-card.bloqueada') && !fazendoEfeitoSuspense) {
                         atualizarInterfaceGaleria();
                     }
+                    
+                    estavaBloqueado = !reveladoAgora;
                 }
             }, 1000);
         }
