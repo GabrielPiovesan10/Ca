@@ -368,13 +368,11 @@
 
     <div id="status-toast" class="status-toast"></div>
 
-    <!-- OVERLAY DE SUSPENSE -->
     <div id="suspense-overlay">
         <div class="suspense-text">Revelando...</div>
         <div id="suspense-number">3</div>
     </div>
 
-    <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
@@ -392,7 +390,6 @@
         </div>
     </div>
 
-    <!-- 1. TELA DE LOGIN VIP -->
     <div id="login-screen" class="screen">
         <div class="login-box">
             <div class="vip-badge">
@@ -411,7 +408,6 @@
         </div>
     </div>
 
-    <!-- TUTORIAL / GUIA DE BOAS-VINDAS -->
     <div id="tutorial-modal" class="tutorial-overlay">
         <div class="tutorial-box">
             <h3>Bem-vindo(a)! ✨</h3>
@@ -442,7 +438,6 @@
         </div>
     </div>
 
-    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div class="camera-controls-top">
             <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
@@ -460,7 +455,6 @@
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA -->
     <div id="gallery-screen" class="screen">
         <div class="app-header-sticky">
             <h2>Álbuns da Festa</h2>
@@ -477,13 +471,11 @@
         </div>
     </div>
 
-    <!-- MODAL DE TELA CHEIA (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharLightbox(event)">
         <button class="lightbox-close" onclick="fecharLightbox(event)">✕</button>
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- MODAL CUSTOMIZADO (ALERTA DE LUXO) -->
     <div id="custom-alert-modal" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <h3 id="custom-alert-title">Aviso</h3>
@@ -492,7 +484,6 @@
         </div>
     </div>
 
-    <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
         <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
             <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>
@@ -865,7 +856,7 @@
         }
 
         let cacheFotos = [];
-        let contagensTotais = {}; // NOVO: Armazena a contagem verdadeira de cada pessoa
+        let contagensTotais = {}; // Armazena a contagem verdadeira de cada pessoa
         let lastVisible = null;
         let carregandoMais = false;
         let temMaisFotos = true;
@@ -882,7 +873,7 @@
             carregarPrimeiraPagina();
         }
 
-        // DEVOLVI O SEU .LIMIT(30) AQUI PARA PROTEGER O BANCO DE DADOS
+        // A TRAVA VOLTOU PARA O SEU BANCO DE DADOS NÃO TRAVAR
         function carregarPrimeiraPagina() {
             db.collection("album_coletivo")
                 .orderBy("timestamp", "desc")
@@ -965,7 +956,7 @@
                 albunsPorAutor[autor].push(foto);
             });
 
-            // GERA A INTERFACE
+            // GERA A INTERFACE PARA CADA ÁLBUM
             for (const [autor, fotos] of Object.entries(albunsPorAutor)) {
                 const card = document.createElement('div');
                 card.className = 'album-card';
@@ -992,10 +983,10 @@
                 `;
                 container.appendChild(card);
 
-                // A MÁGICA ACONTECE AQUI: Pede pro Firebase o número exato de fotos, mas NÃO BAIXA AS FOTOS
+                // O CÓDIGO CORRIGIDO ESTÁ AQUI: Pede o número real sem quebrar o laço
                 if (contagensTotais[autor] === undefined) {
-                    db.collection("album_coletivo").where("autor", "==", autor).count().get().then(snap => {
-                        const totalReal = snap.data().count;
+                    db.collection("album_coletivo").where("autor", "==", autor).get().then(snap => {
+                        const totalReal = snap.size; // Usa o size nativo
                         contagensTotais[autor] = totalReal;
                         
                         const el = document.getElementById(idContador);
