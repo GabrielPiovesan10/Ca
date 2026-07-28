@@ -153,7 +153,7 @@
         }
         .btn-acao:active { transform: scale(0.98); }
 
-        /* === TUTORIAL / GUIA DE BOAS-VINDAS === */
+        /* === TUTORIAL === */
         .tutorial-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
             background: rgba(15, 23, 42, 0.6); z-index: 3000;
@@ -207,20 +207,13 @@
             position: absolute; bottom: 25px; left: 0; width: 100%; 
             display: flex; justify-content: center; z-index: 20; 
         }
-        
-        /* Modificação: Animação do botão de captura */
         .capture-btn {
             width: 75px; height: 75px; background: rgba(255, 255, 255, 0.2); border: 4px solid #fff;
             border-radius: 50%; cursor: pointer; backdrop-filter: blur(8px);
             box-shadow: 0 0 25px rgba(0,0,0,0.5); transition: all 0.2s ease-out;
         }
         .capture-btn:active { background: #fff; transform: scale(0.85); }
-        .capture-btn.clicked {
-            background: var(--rosa-principal);
-            border-color: var(--rosa-claro);
-            transform: scale(0.85);
-            box-shadow: 0 0 30px var(--rosa-principal);
-        }
+        .capture-btn.clicked { background: var(--rosa-principal); border-color: var(--rosa-claro); transform: scale(0.85); box-shadow: 0 0 30px var(--rosa-principal); }
 
         /* === TELA GALERIA === */
         .app-header-sticky {
@@ -228,8 +221,7 @@
             background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--borda-sutil);
             padding: 25px 15px 15px 15px; text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); flex-shrink: 0;
         }
         .app-header-sticky h2 { font-size: 2.3rem; margin-bottom: 6px; line-height: 1;}
         .timer-revelacao { font-size: 0.75rem; background: var(--rosa-claro); color: var(--rosa-principal); padding: 6px 18px; border-radius: 20px; border: 1px solid rgba(224, 122, 147, 0.3); display: inline-block; letter-spacing: 1px; text-transform: uppercase; font-weight: 700;}
@@ -242,15 +234,12 @@
         .lista-albuns { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 500px; }
         
         .album-card {
-            background: var(--branco);
-            border: 1px solid var(--borda-sutil);
-            border-radius: 20px; padding: 20px 22px; display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; box-shadow: var(--sombra-card); transition: transform 0.2s;
+            background: var(--branco); border: 1px solid var(--borda-sutil); border-radius: 20px; padding: 20px 22px; 
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-shadow: var(--sombra-card); transition: transform 0.2s;
         }
         .album-card:active { transform: scale(0.98); background: #fdf2f4; border-color: var(--rosa-principal); }
         .album-info h3 { font-size: 1.1rem; color: var(--texto-principal); font-weight: 600; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;}
         .album-info p { font-size: 0.75rem; color: var(--texto-secundario); text-transform: uppercase; letter-spacing: 1px;}
-        
         .album-icon-svg { width: 22px; height: 22px; fill: var(--rosa-principal); }
 
         .detalhe-topo { display: flex; align-items: center; margin-bottom: 20px; width: 100%; gap: 15px; }
@@ -259,7 +248,6 @@
             padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-family: 'Montserrat', sans-serif;
             font-weight: 600; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
         }
-        
         .titulo-album-autor { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--texto-principal); }
 
         .grid-fotos-autor { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 500px; }
@@ -271,14 +259,10 @@
         }
         .foto-card img { 
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
-            image-rendering: -webkit-optimize-contrast; image-rendering: high-quality;
-            z-index: 1; 
+            image-rendering: -webkit-optimize-contrast; image-rendering: high-quality; z-index: 1; 
         }
-        
         .foto-card.bloqueada img { filter: blur(20px) grayscale(30%); }
-        .lock-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(5px); z-index: 2;
-        }
+        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(5px); z-index: 2; }
         .lock-icon-svg { width: 32px; height: 32px; fill: var(--texto-principal); opacity: 0.8; }
 
         .foto-actions {
@@ -289,8 +273,7 @@
             background: rgba(255, 255, 255, 0.25); border: 1px solid rgba(255, 255, 255, 0.4); color: #fff; 
             padding: 5px 10px; border-radius: 10px; display: flex; align-items: center; gap: 4px;
             cursor: pointer; backdrop-filter: blur(10px); font-size: 0.6rem; font-weight: 700; 
-            font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;
-            white-space: nowrap;
+            font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
         }
         .btn-lux svg { width: 12px; height: 12px; fill: currentColor; }
 
@@ -300,92 +283,53 @@
 
         /* === LIGHTBOX === */
         #lightbox-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
-            background: rgba(0, 0, 0, 0.9); z-index: 1000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px; backdrop-filter: blur(15px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh; background: rgba(0, 0, 0, 0.9); z-index: 1000; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(15px);
         }
         #lightbox-modal.active { display: flex; }
         #lightbox-img { max-width: 100%; max-height: 75vh; object-fit: contain; border-radius: 16px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
         .lightbox-close {
-            position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff;
-            width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+            position: absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; width: 42px; height: 42px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
         }
 
         /* === MENU INFERIOR FIXO === */
         .bottom-nav {
-            height: 75px; background: rgba(255, 255, 255, 0.9); border-top: 1px solid var(--borda-sutil);
-            display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(20px);
-            position: fixed; bottom: 0; left: 0; padding-bottom: env(safe-area-inset-bottom);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+            height: 75px; background: rgba(255, 255, 255, 0.9); border-top: 1px solid var(--borda-sutil); display: none; justify-content: space-around; align-items: center; width: 100%; z-index: 100; backdrop-filter: blur(20px); position: fixed; bottom: 0; left: 0; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
         }
         .nav-item {
-            color: var(--texto-secundario); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; cursor: pointer; 
-            padding: 10px 20px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
+            color: var(--texto-secundario); font-size: 0.75rem; text-transform: uppercase; font-weight: 700; cursor: pointer; padding: 10px 20px; border-radius: 30px; letter-spacing: 1px; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
         .nav-item svg { width: 18px; height: 18px; fill: currentColor; }
         .nav-item.active { background: var(--rosa-claro); color: var(--rosa-principal); border: 1px solid rgba(224, 122, 147, 0.2); }
 
         /* === MODAL CUSTOMIZADO === */
         .custom-alert-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
-            background: rgba(0, 0, 0, 0.5); z-index: 2000;
-            display: none; justify-content: center; align-items: center;
-            backdrop-filter: blur(10px); padding: 20px;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh; background: rgba(0, 0, 0, 0.5); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); padding: 20px;
         }
         .custom-alert-overlay.active { display: flex; }
-        .custom-alert-box {
-            background: var(--branco); border: 1px solid var(--borda-sutil);
-            border-radius: 28px; padding: 35px 25px; text-align: center; width: 100%; max-width: 340px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
+        .custom-alert-box { background: var(--branco); border: 1px solid var(--borda-sutil); border-radius: 28px; padding: 35px 25px; text-align: center; width: 100%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .custom-alert-box h3 { font-family: 'Great Vibes', cursive; font-size: 2.5rem; color: var(--rosa-principal); margin-bottom: 15px; }
         .custom-alert-box p { font-size: 0.9rem; color: var(--texto-principal); margin-bottom: 25px; line-height: 1.6; font-family: 'Montserrat', sans-serif;}
 
         /* === MODAL DE SUSPENSE E REVELAÇÃO === */
-        #suspense-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
-            background: rgba(0, 0, 0, 0.93); z-index: 9999;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.8s ease; backdrop-filter: blur(15px);
-        }
-        .suspense-text {
-            color: #fff; font-family: 'Great Vibes', cursive; font-size: 3.5rem; 
-            margin-bottom: 20px; color: var(--rosa-principal);
-        }
-        #suspense-number {
-            font-size: 8rem; color: #fff; font-family: 'Montserrat', sans-serif;
-            font-weight: 700; text-shadow: 0 0 30px rgba(224, 122, 147, 0.8);
-            animation: pulse-number 1s infinite;
-        }
-        @keyframes pulse-number {
-            0% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(0.8); opacity: 0.6; }
-        }
+        #suspense-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; background: rgba(0, 0, 0, 0.93); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.8s ease; backdrop-filter: blur(15px); }
+        .suspense-text { color: #fff; font-family: 'Great Vibes', cursive; font-size: 3.5rem; margin-bottom: 20px; color: var(--rosa-principal); }
+        #suspense-number { font-size: 8rem; color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; text-shadow: 0 0 30px rgba(224, 122, 147, 0.8); animation: pulse-number 1s infinite; }
+        @keyframes pulse-number { 0% { transform: scale(0.8); opacity: 0.6; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.6; } }
     </style>
 </head>
 <body>
-
     <div id="status-toast" class="status-toast"></div>
 
-    <!-- OVERLAY DE SUSPENSE -->
-    <div id="suspense-overlay">
-        <div class="suspense-text">Revelando...</div>
-        <div id="suspense-number">3</div>
-    </div>
+    <div id="suspense-overlay"><div class="suspense-text">Revelando...</div><div id="suspense-number">3</div></div>
 
-    <!-- 0. PAINEL ADMIN -->
     <div id="admin-screen" class="screen">
         <div class="admin-box">
             <h2>Painel da Festa</h2>
             <p id="admin-desc">Escolha o dia e horário em que os álbuns coletivos serão revelados para você e para os convidados.</p>
-            
             <div id="painel-geracao">
                 <input type="datetime-local" id="data-input" class="date-input">
                 <button class="btn-acao" onclick="gerarLink()">Gerar Link Mágico</button>
             </div>
-
             <div id="link-gerado-container">
                 <div class="link-text" id="link-text"></div>
                 <button class="btn-acao" onclick="copiarLink()">Copiar Link</button>
@@ -393,116 +337,79 @@
         </div>
     </div>
 
-    <!-- 1. TELA DE LOGIN VIP -->
     <div id="login-screen" class="screen">
         <div class="login-box">
-            <div class="vip-badge">
-                <svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2M3 9L4.5 14H19.5L21 9L15 11L12 6L9 11L3 9M2 16V22H22V16H2Z"/></svg>
-            </div>
+            <div class="vip-badge"><svg viewBox="0 0 24 24"><path d="M12 2L15 8H9L12 2M3 9L4.5 14H19.5L21 9L15 11L12 6L9 11L3 9M2 16V22H22V16H2Z"/></svg></div>
             <h1 class="login-title">Ana Julia</h1>
             <div class="divider"></div>
             <p class="login-subtitle">Identificação do Convidado</p>
-            
             <div class="input-group">
                 <input type="text" id="input-nome" class="lux-input" placeholder="Seu Nome" autocomplete="off">
                 <input type="text" id="input-sobrenome" class="lux-input" placeholder="Seu Sobrenome" autocomplete="off">
             </div>
-
             <button class="btn-acao" onclick="entrarNoSistema()">Entrar na Câmera</button>
         </div>
     </div>
 
-    <!-- TUTORIAL / GUIA DE BOAS-VINDAS -->
     <div id="tutorial-modal" class="tutorial-overlay">
         <div class="tutorial-box">
             <h3>Bem-vindo(a)! ✨</h3>
             <div class="tutorial-sub">Álbum Coletivo • 15 Anos Ana Júlia</div>
-            
             <div class="tutorial-steps">
                 <div class="tutorial-item">
                     <div class="tutorial-icon">📸</div>
-                    <div class="tutorial-text">
-                        <h4>Sua Perspectiva</h4>
-                        <p>Esta é uma câmera exclusiva para você registrar a festa através do seu ponto de vista.</p>
-                    </div>
+                    <div class="tutorial-text"><h4>Sua Perspectiva</h4><p>Esta é uma câmera exclusiva para você registrar a festa através do seu ponto de vista.</p></div>
                 </div>
                 <div class="tutorial-item">
                     <div class="tutorial-icon">🔒</div>
-                    <div class="tutorial-text">
-                        <h4>Álbum Surpresa</h4>
-                        <p>As fotos ficam guardadas e trancadas. Elas só serão reveladas para todos os convidados no horário escolhido pela Ana Júlia!</p>
-                    </div>
+                    <div class="tutorial-text"><h4>Álbum Surpresa</h4><p>As fotos ficam guardadas e trancadas. Elas só serão reveladas no horário escolhido pela Ana Júlia!</p></div>
                 </div>
             </div>
-
-            <div class="tutorial-aviso">
-                ⚠️ <strong>Aviso importante:</strong> Como o álbum será aberto para todo mundo ver depois, tire fotos legais dos momentos da festa. Evite registros inadequados para ninguém passar vergonha! 😉
-            </div>
-
+            <div class="tutorial-aviso">⚠️ <strong>Aviso importante:</strong> O álbum será aberto para todos depois. Evite registros inadequados para ninguém passar vergonha! 😉</div>
             <button class="btn-acao" onclick="fecharTutorialEProsseguir()">Entendi, Vamos Lá!</button>
         </div>
     </div>
 
-    <!-- 2. TELA DA CÂMERA -->
     <div id="camera-screen" class="screen">
         <div class="camera-controls-top">
-            <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()" title="Virar Câmera">
-                <svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>
-            </button>
-            <button class="camera-btn-top" id="btn-flash" onclick="toggleFlash()" title="Ativar Flash">
-                <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l3-8z"/></svg>
-            </button>
+            <button class="camera-btn-top" id="btn-camera-switch" onclick="alternarCamera()"><svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg></button>
+            <button class="camera-btn-top" id="btn-flash" onclick="toggleFlash()"><svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l3-8z"/></svg></button>
         </div>
-
         <video id="video-preview" autoplay playsinline muted></video>
-        <div class="capture-wrapper">
-            <button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button>
-        </div>
+        <div class="capture-wrapper"><button class="capture-btn" id="btn-tirar-foto" onclick="tirarFoto()"></button></div>
         <canvas id="canvas-escondido" style="display: none;"></canvas>
     </div>
 
-    <!-- 3. TELA DA GALERIA -->
     <div id="gallery-screen" class="screen">
         <div class="app-header-sticky">
             <h2>Álbuns da Festa</h2>
             <div class="timer-revelacao" id="timer-display">Calculando tempo...</div>
         </div>
-        
         <div class="gallery-scroll-area">
             <div class="lista-albuns" id="container-albuns">
                 <div class="empty-state">
-                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                    <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
+                    <p>Carregando álbuns...</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE TELA CHEIA (LIGHTBOX) -->
     <div id="lightbox-modal" onclick="fecharLightbox(event)">
         <button class="lightbox-close" onclick="fecharLightbox(event)">✕</button>
         <img id="lightbox-img" src="" alt="Foto Ampliada">
     </div>
 
-    <!-- MODAL CUSTOMIZADO (ALERTA DE LUXO) -->
     <div id="custom-alert-modal" class="custom-alert-overlay">
         <div class="custom-alert-box">
             <h3 id="custom-alert-title">Aviso</h3>
-            <p id="custom-alert-message">Mensagem de aviso aqui.</p>
+            <p id="custom-alert-message">Mensagem de aviso.</p>
             <button class="btn-acao" onclick="fecharAlerta()">Entendi</button>
         </div>
     </div>
 
-    <!-- MENU INFERIOR -->
     <div id="bottom-menu" class="bottom-nav">
-        <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')">
-            <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>
-            Câmera
-        </div>
-        <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')">
-            <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            Álbuns
-        </div>
+        <div class="nav-item active" id="nav-camera" onclick="mudarAba('camera')"><svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-9h-3.17L15 3H9L7.17 6H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 14H4V8h16v12z"/></svg>Câmera</div>
+        <div class="nav-item" id="nav-galeria" onclick="mudarAba('galeria')"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>Álbuns</div>
     </div>
 
     <script>
@@ -526,9 +433,9 @@
         let usandoCameraFrontal = false;
         let timestampRevelacao = 0;
         let autorSelecionado = null;
+        let colecaoAtual = "";
         let trocandoCamera = false;
         
-        // Variáveis para controle do Efeito de Suspense
         let estavaBloqueado = null;
         let fazendoEfeitoSuspense = false;
 
@@ -545,14 +452,11 @@
             document.getElementById('custom-alert-message').innerText = mensagem;
             document.getElementById('custom-alert-modal').classList.add('active');
         }
-        function fecharAlerta() {
-            document.getElementById('custom-alert-modal').classList.remove('active');
-        }
+        function fecharAlerta() { document.getElementById('custom-alert-modal').classList.remove('active'); }
 
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
-
             document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
 
             if (!dataParam) {
@@ -564,7 +468,6 @@
                     nomeCompletoConvidado = nomeSalvo;
                     document.getElementById('bottom-menu').style.display = 'flex';
                     mudarAba('camera');
-                    // Inicia escuta somente na aba galeria agora
                 } else {
                     document.getElementById('login-screen').classList.add('active');
                 }
@@ -573,42 +476,27 @@
 
         function gerarLink() {
             const dataEscolhida = document.getElementById('data-input').value;
-            if(!dataEscolhida) { 
-                mostrarAlerta("Por favor, selecione a data e o horário em que o álbum será revelado!", "Data Inválida"); 
-                return; 
-            }
-
-            const urlLimpa = window.location.href.split('?')[0];
-            const linkFinal = `${urlLimpa}?data=${dataEscolhida}`;
-            
+            if(!dataEscolhida) { mostrarAlerta("Por favor, selecione a data e o horário!", "Data Inválida"); return; }
+            const linkFinal = `${window.location.href.split('?')[0]}?data=${dataEscolhida}`;
             document.getElementById('painel-geracao').style.display = 'none';
-            document.getElementById('admin-desc').innerHTML = "Tudo certo! Gere o seu QR Code com o link abaixo ou envie diretamente aos convidados.";
+            document.getElementById('admin-desc').innerHTML = "Gere o seu QR Code com o link abaixo ou envie diretamente aos convidados.";
             document.getElementById('link-text').innerText = linkFinal;
             document.getElementById('link-gerado-container').style.display = 'block';
         }
 
         function copiarLink() {
-            const link = document.getElementById('link-text').innerText;
-            navigator.clipboard.writeText(link).then(() => { 
-                mostrarToast("Copiado com sucesso!", "#e07a93");
-                setTimeout(fecharToast, 2500);
-            }).catch(() => {
-                mostrarAlerta("Selecione o texto do link e copie manualmente.", "Erro ao Copiar");
-            });
+            navigator.clipboard.writeText(document.getElementById('link-text').innerText).then(() => { 
+                mostrarToast("Copiado com sucesso!"); setTimeout(fecharToast, 2500);
+            }).catch(() => { mostrarAlerta("Selecione o texto e copie manualmente.", "Erro ao Copiar"); });
         }
 
         function entrarNoSistema() {
             const nome = document.getElementById('input-nome').value.trim();
             const sobrenome = document.getElementById('input-sobrenome').value.trim();
-            
-            if(!nome || !sobrenome) { 
-                mostrarAlerta("Por favor, preencha o seu nome e sobrenome para continuar.", "Identificação"); 
-                return; 
-            }
+            if(!nome || !sobrenome) { mostrarAlerta("Preencha o seu nome e sobrenome.", "Identificação"); return; }
             
             nomeCompletoConvidado = `${nome} ${sobrenome}`.trim();
             localStorage.setItem('anajulia_convidado_completo', nomeCompletoConvidado);
-            
             document.getElementById('login-screen').classList.remove('active');
             document.getElementById('tutorial-modal').classList.add('active');
         }
@@ -628,80 +516,47 @@
             if(aba === 'camera') {
                 document.getElementById('camera-screen').classList.add('active');
                 document.getElementById('nav-camera').classList.add('active');
-                autorSelecionado = null;
+                voltarParaAlbuns();
                 iniciarCamera();
                 pararContadorTempoReal();
             } else {
                 document.getElementById('gallery-screen').classList.add('active');
                 document.getElementById('nav-galeria').classList.add('active');
                 pararCamera();
-                
-                // MUDANÇA: Toda vez que abrir a aba Galeria, atualiza e recarrega as fotos novas da festa
-                iniciarEscutaGaleria();
+                iniciarEscutaPlacar();
                 iniciarContadorTempoReal();
             }
         }
 
         async function iniciarCamera() {
             try {
-                if (streamDeVideo) {
-                    streamDeVideo.getTracks().forEach(t => t.stop());
-                }
-                const constraints = {
-                    video: { 
-                        facingMode: usandoCameraFrontal ? 'user' : 'environment',
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
-                    },
-                    audio: false
-                };
-                streamDeVideo = await navigator.mediaDevices.getUserMedia(constraints);
+                if (streamDeVideo) streamDeVideo.getTracks().forEach(t => t.stop());
+                streamDeVideo = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: usandoCameraFrontal ? 'user' : 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false 
+                });
                 video.srcObject = streamDeVideo;
                 trackDeVideo = streamDeVideo.getVideoTracks()[0];
                 
                 if (usandoCameraFrontal) {
-                    video.classList.add('espelhado');
-                    btnFlash.style.display = 'none';
+                    video.classList.add('espelhado'); btnFlash.style.display = 'none';
                 } else {
                     video.classList.remove('espelhado');
-                    const capabilities = trackDeVideo.getCapabilities ? trackDeVideo.getCapabilities() : {};
-                    if (!capabilities.torch) {
-                        btnFlash.style.display = 'none';
-                    } else {
-                        btnFlash.style.display = 'flex';
-                    }
+                    btnFlash.style.display = (trackDeVideo.getCapabilities && trackDeVideo.getCapabilities().torch) ? 'flex' : 'none';
                 }
-            } catch (err) { 
-                mostrarAlerta("Não conseguimos acessar sua câmera. Certifique-se de permitir o acesso nas configurações do navegador.", "Câmera Bloqueada"); 
-            }
+            } catch (err) { mostrarAlerta("Permita o acesso à câmera.", "Câmera Bloqueada"); }
         }
 
         function pararCamera() {
-            if (flashLigado && trackDeVideo) {
-                trackDeVideo.applyConstraints({ advanced: [{ torch: false }] }).catch(() => {});
-                flashLigado = false;
-                btnFlash.classList.remove('ativo');
-            }
-            if(streamDeVideo) { streamDeVideo.getTracks().forEach(track => track.stop()); }
+            if (flashLigado && trackDeVideo) { trackDeVideo.applyConstraints({ advanced: [{ torch: false }] }).catch(()=>{}); flashLigado = false; btnFlash.classList.remove('ativo'); }
+            if(streamDeVideo) streamDeVideo.getTracks().forEach(t => t.stop());
         }
 
         async function alternarCamera() {
-            if (trocandoCamera) return;
-            trocandoCamera = true;
-            btnSwitch.style.pointerEvents = 'none';
-
+            if (trocandoCamera) return; trocandoCamera = true; btnSwitch.style.pointerEvents = 'none';
             usandoCameraFrontal = !usandoCameraFrontal;
-            if (flashLigado) {
-                flashLigado = false;
-                btnFlash.classList.remove('ativo');
-            }
-            
+            if (flashLigado) { flashLigado = false; btnFlash.classList.remove('ativo'); }
             await iniciarCamera();
-            
-            setTimeout(() => {
-                trocandoCamera = false;
-                btnSwitch.style.pointerEvents = 'auto';
-            }, 400);
+            setTimeout(() => { trocandoCamera = false; btnSwitch.style.pointerEvents = 'auto'; }, 400);
         }
 
         async function toggleFlash() {
@@ -709,113 +564,65 @@
             try {
                 flashLigado = !flashLigado;
                 await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
-                
-                if (flashLigado) {
-                    btnFlash.classList.add('ativo');
-                    mostrarToast("Flash ativado", "#e07a93");
-                    setTimeout(fecharToast, 1200);
-                } else {
-                    btnFlash.classList.remove('ativo');
-                }
-            } catch (err) {
-                try {
-                    await trackDeVideo.applyConstraints({ advanced: [{ torch: flashLigado }] });
-                    if (flashLigado) {
-                        btnFlash.classList.add('ativo');
-                        mostrarToast("Flash ativado", "#e07a93");
-                        setTimeout(fecharToast, 1200);
-                    } else {
-                        btnFlash.classList.remove('ativo');
-                    }
-                } catch (e) {
-                    flashLigado = false;
-                    btnFlash.classList.remove('ativo');
-                    mostrarAlerta("O hardware do seu celular não suporta a função de flash através de navegadores web.", "Flash Indisponível");
-                }
+                if (flashLigado) { btnFlash.classList.add('ativo'); mostrarToast("Flash ativado"); setTimeout(fecharToast, 1200); } 
+                else { btnFlash.classList.remove('ativo'); }
+            } catch (e) {
+                flashLigado = false; btnFlash.classList.remove('ativo');
+                mostrarAlerta("Flash indisponível no navegador.", "Erro");
             }
         }
 
-        function mostrarToast(msg, cor = '#e07a93') {
-            statusToast.innerHTML = msg;
-            statusToast.style.borderColor = cor;
-            statusToast.style.display = 'block';
-        }
-
+        function mostrarToast(msg) { statusToast.innerHTML = msg; statusToast.style.display = 'block'; }
         function fecharToast() { statusToast.style.display = 'none'; }
 
         function tirarFoto() {
             btnCaptura.style.pointerEvents = 'none';
-            
-            // Adicionada a classe de animação do botão
             btnCaptura.classList.add('clicked');
-            
             video.style.opacity = '0.3';
-            setTimeout(() => { 
-                video.style.opacity = '1'; 
-                // Remove a animação do botão após um tempinho
-                btnCaptura.classList.remove('clicked');
-            }, 150);
+            setTimeout(() => { video.style.opacity = '1'; btnCaptura.classList.remove('clicked'); }, 150);
 
-            mostrarToast("Foto salva!", "#e07a93");
-            setTimeout(fecharToast, 1500);
+            mostrarToast("Foto salva!"); setTimeout(fecharToast, 1500);
 
-            // === A MÁGICA DA COMPRESSÃO ACONTECE AQUI ===
-            const MAX_WIDTH = 800; // Limita a largura da foto para não travar
-            let largura = video.videoWidth || 1280;
-            let altura = video.videoHeight || 720;
-
-            // Calcula a proporção correta para não distorcer a imagem
-            if (largura > MAX_WIDTH) {
-                altura = Math.floor(altura * (MAX_WIDTH / largura));
-                largura = MAX_WIDTH;
-            }
-
-            canvas.width = largura;
-            canvas.height = altura;
+            let largura = video.videoWidth || 1280; let altura = video.videoHeight || 720;
+            if (largura > 800) { altura = Math.floor(altura * (800 / largura)); largura = 800; }
+            canvas.width = largura; canvas.height = altura;
             
             const ctx = canvas.getContext('2d');
-            if (usandoCameraFrontal) {
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-            }
-            
-            // Desenha a imagem no canvas já com o tamanho reduzido
+            if (usandoCameraFrontal) { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Reduz a qualidade do JPEG para 60% (0.60) para ficar super leve
             const fotoBase64 = canvas.toDataURL('image/jpeg', 0.60);
 
-            db.collection("album_coletivo").add({
+            const nomeColecaoPessoal = "fotos_" + nomeCompletoConvidado.replace(/[^a-zA-Z0-9]/g, "");
+
+            db.collection(nomeColecaoPessoal).add({
                 imagemTexto: fotoBase64,
                 autor: nomeCompletoConvidado,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 btnCaptura.style.pointerEvents = 'auto';
             }).catch(() => {
-                btnCaptura.style.pointerEvents = 'auto';
-                mostrarAlerta("Erro ao salvar a foto. Tente novamente.", "Ops!");
+                btnCaptura.style.pointerEvents = 'auto'; mostrarAlerta("Erro ao salvar. Tente de novo.", "Ops!");
             });
+
+            db.collection("albuns_stats").doc(nomeCompletoConvidado).set({
+                autor: nomeCompletoConvidado,
+                colecao: nomeColecaoPessoal,
+                quantidade: firebase.firestore.FieldValue.increment(1),
+                ultimaFoto: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
         }
 
 
         function checarRevelacao() {
-            const agora = new Date().getTime();
-            const faltam = timestampRevelacao - agora;
-            const timerEl = document.getElementById('timer-display');
-            const menuIcon = document.getElementById('nav-galeria');
+            const agora = new Date().getTime(); const faltam = timestampRevelacao - agora;
+            const timerEl = document.getElementById('timer-display'); const menuIcon = document.getElementById('nav-galeria');
 
             if (faltam <= 0) {
-                timerEl.innerText = "Álbuns Revelados";
-                timerEl.style.borderColor = "#e07a93"; 
-                timerEl.style.color = "#e07a93";
+                timerEl.innerText = "Álbuns Revelados"; timerEl.style.borderColor = "#e07a93"; timerEl.style.color = "#e07a93";
                 menuIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Álbuns';
                 return true; 
             } else {
-                const horas = Math.floor(faltam / (1000 * 60 * 60));
-                const min = Math.floor((faltam % (1000 * 60 * 60)) / (1000 * 60));
-                const seg = Math.floor((faltam % (1000 * 60)) / 1000);
-                
-                timerEl.innerText = `Revelação em: ${horas}h ${min}m ${seg}s`;
+                timerEl.innerText = `Revelação em: ${Math.floor(faltam/(1000*60*60))}h ${Math.floor((faltam%(1000*60*60))/(1000*60))}m ${Math.floor((faltam%(1000*60))/1000)}s`;
                 menuIcon.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg> Secreto';
                 return false; 
             }
@@ -825,27 +632,18 @@
             fazendoEfeitoSuspense = true;
             const overlay = document.getElementById('suspense-overlay');
             const numberEl = document.getElementById('suspense-number');
-            
-            overlay.style.display = 'flex';
-            setTimeout(() => { overlay.style.opacity = '1'; }, 10);
+            overlay.style.display = 'flex'; setTimeout(() => { overlay.style.opacity = '1'; }, 10);
 
-            let contagem = 3;
-            numberEl.innerText = contagem;
-
+            let contagem = 3; numberEl.innerText = contagem;
             const intervalo = setInterval(() => {
                 contagem--;
-                if (contagem > 0) {
-                    numberEl.innerText = contagem;
-                } else {
-                    clearInterval(intervalo);
-                    numberEl.innerText = "✨";
-                    
+                if (contagem > 0) { numberEl.innerText = contagem; } else {
+                    clearInterval(intervalo); numberEl.innerText = "✨";
                     setTimeout(() => {
                         overlay.style.opacity = '0';
                         setTimeout(() => {
-                            overlay.style.display = 'none';
-                            fazendoEfeitoSuspense = false;
-                            atualizarInterfaceGaleria();
+                            overlay.style.display = 'none'; fazendoEfeitoSuspense = false;
+                            if(autorSelecionado !== null) { renderizarDetalhesAlbum(); } else { atualizarListaDeAlbuns(); }
                         }, 800);
                     }, 800);
                 }
@@ -857,230 +655,127 @@
             timerInterval = setInterval(() => {
                 if(document.getElementById('gallery-screen').classList.contains('active')) {
                     const reveladoAgora = checarRevelacao();
-                    
-                    if (estavaBloqueado === null) {
-                        estavaBloqueado = !reveladoAgora;
-                    }
+                    if (estavaBloqueado === null) estavaBloqueado = !reveladoAgora;
 
                     if (estavaBloqueado === true && reveladoAgora === true && !fazendoEfeitoSuspense) {
                         dispararEfeitoSuspense();
                     } else if (reveladoAgora && document.querySelector('.foto-card.bloqueada') && !fazendoEfeitoSuspense) {
-                        atualizarInterfaceGaleria();
+                        if(autorSelecionado !== null) renderizarDetalhesAlbum(); else atualizarListaDeAlbuns();
                     }
-                    
                     estavaBloqueado = !reveladoAgora;
                 }
             }, 1000);
         }
+        function pararContadorTempoReal() { if(timerInterval) clearInterval(timerInterval); }
 
-        function pararContadorTempoReal() {
-            if(timerInterval) { clearInterval(timerInterval); }
-        }
-
-        // =========================================================
-        // MUDANÇAS PARA ROLAGEM INFINITA E PAGINAÇÃO (LAZY LOADING)
-        // =========================================================
-        
-        let cacheFotos = [];
+        let placarGeral = [];
+        let cacheFotosAlbum = [];
         let lastVisible = null;
         let carregandoMais = false;
         let temMaisFotos = true;
 
-        function iniciarEscutaGaleria() {
-            cacheFotos = [];
-            lastVisible = null;
-            temMaisFotos = true;
-            document.getElementById('container-albuns').innerHTML = `
-                <div class="empty-state">
-                    <p>Carregando álbuns...</p>
-                </div>`; // Mostra um feedback temporário enquanto puxa as fotos novas
-            carregarPrimeiraPagina();
+        function iniciarEscutaPlacar() {
+            db.collection("albuns_stats").orderBy("ultimaFoto", "desc").onSnapshot((querySnapshot) => {
+                placarGeral = [];
+                querySnapshot.forEach((doc) => { placarGeral.push(doc.data()); });
+                if(document.getElementById('gallery-screen').classList.contains('active') && autorSelecionado === null) {
+                    atualizarListaDeAlbuns();
+                }
+            });
         }
 
-        function carregarPrimeiraPagina() {
-            db.collection("album_coletivo")
-                .orderBy("timestamp", "desc")
-                .limit(30) // Traz só 30 no início
-                .get()
-                .then((querySnapshot) => {
-                    cacheFotos = []; 
-                    if (!querySnapshot.empty) {
-                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
-                    }
-                    if(document.getElementById('gallery-screen').classList.contains('active')) {
-                        atualizarInterfaceGaleria();
-                    }
-                });
+        function atualizarListaDeAlbuns() {
+            const revelado = checarRevelacao();
+            const container = document.getElementById('container-albuns');
+            container.innerHTML = ''; 
+            
+            if (placarGeral.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
+                    </div>`; return;
+            }
+
+            placarGeral.forEach(album => {
+                const card = document.createElement('div'); card.className = 'album-card';
+                card.onclick = () => { abrirAlbum(album.autor, album.colecao); };
+                const iconeSvg = revelado ? '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>' : '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+                card.innerHTML = `<div class="album-info"><h3>Álbum de ${album.autor}</h3><p>${album.quantidade} ${album.quantidade === 1 ? 'foto registrada' : 'fotos registradas'}</p></div><div>${iconeSvg}</div>`;
+                container.appendChild(card);
+            });
         }
 
-        function carregarMaisFotos() {
-            if (carregandoMais || !temMaisFotos || !lastVisible) return;
+        function voltarParaAlbuns() {
+            autorSelecionado = null; colecaoAtual = "";
+            atualizarListaDeAlbuns();
+        }
+
+        function abrirAlbum(autor, colecao) {
+            autorSelecionado = autor; colecaoAtual = colecao;
+            cacheFotosAlbum = []; lastVisible = null; temMaisFotos = true;
+            document.getElementById('container-albuns').innerHTML = `<div class="empty-state"><p>Abrindo álbum de ${autor}...</p></div>`;
+            
+            db.collection(colecaoAtual).orderBy("timestamp", "desc").limit(30).get().then((snap) => {
+                if (!snap.empty) { lastVisible = snap.docs[snap.docs.length - 1]; snap.forEach(doc => cacheFotosAlbum.push(doc.data())); }
+                renderizarDetalhesAlbum();
+            });
+        }
+
+        function carregarMaisFotosAlbum() {
+            if (carregandoMais || !temMaisFotos || !lastVisible || !colecaoAtual) return;
             carregandoMais = true;
-
-            db.collection("album_coletivo")
-                .orderBy("timestamp", "desc")
-                .startAfter(lastVisible)
-                .limit(30) // Puxa blocos de 30 a cada rolagem
-                .get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
-                        if(document.getElementById('gallery-screen').classList.contains('active')) {
-                            atualizarInterfaceGaleria();
-                        }
-                    } else {
-                        temMaisFotos = false; // Acabaram as fotos do banco
-                    }
-                    carregandoMais = false;
-                })
-                .catch(() => {
-                    carregandoMais = false;
-                });
+            db.collection(colecaoAtual).orderBy("timestamp", "desc").startAfter(lastVisible).limit(30).get().then((snap) => {
+                if (!snap.empty) { lastVisible = snap.docs[snap.docs.length - 1]; snap.forEach(doc => cacheFotosAlbum.push(doc.data())); renderizarDetalhesAlbum(); } 
+                else { temMaisFotos = false; }
+                carregandoMais = false;
+            });
         }
 
-        // Fica de olho quando a pessoa rola a tela para baixo para puxar mais
         document.addEventListener("DOMContentLoaded", () => {
             const scrollArea = document.querySelector('.gallery-scroll-area');
             if (scrollArea) {
                 scrollArea.addEventListener('scroll', () => {
-                    // Quando a pessoa chegar a 150 pixels do final, puxa automaticamente
                     if (scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 150) {
-                        carregarMaisFotos();
+                        if (autorSelecionado !== null) carregarMaisFotosAlbum();
                     }
                 });
             }
         });
 
-        // =========================================================
-        // FIM DAS MUDANÇAS DE ROLAGEM
-        // =========================================================
-
-        function atualizarInterfaceGaleria() {
+        function renderizarDetalhesAlbum() {
             const revelado = checarRevelacao();
-            const container = document.getElementById('container-albuns');
-            container.innerHTML = ''; 
+            let html = `<div class="detalhe-topo"><button class="btn-voltar" onclick="voltarParaAlbuns()">← Voltar</button><h3 class="titulo-album-autor">Álbum de ${autorSelecionado}</h3></div><div class="grid-fotos-autor">`;
             
-            if (cacheFotos.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                        <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
-                    </div>`;
-                return;
-            }
-
-            if (autorSelecionado !== null) {
-                renderizarDetalhesAlbum(autorSelecionado, revelado);
-                return;
-            }
-
-            const albunsPorAutor = {};
-            cacheFotos.forEach(foto => {
-                const autor = foto.autor || "Convidado";
-                if (!albunsPorAutor[autor]) {
-                    albunsPorAutor[autor] = [];
-                }
-                albunsPorAutor[autor].push(foto);
-            });
-
-            for (const [autor, fotos] of Object.entries(albunsPorAutor)) {
-                const card = document.createElement('div');
-                card.className = 'album-card';
-                card.onclick = () => { autorSelecionado = autor; atualizarInterfaceGaleria(); };
-                
-                const iconeSvg = revelado 
-                    ? '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>'
-                    : '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
-
-                card.innerHTML = `
-                    <div class="album-info">
-                        <h3>Álbum de ${autor}</h3>
-                        <p>${fotos.length} ${fotos.length === 1 ? 'foto registrada' : 'fotos registradas'}</p>
-                    </div>
-                    <div>${iconeSvg}</div>
-                `;
-                container.appendChild(card);
-            }
-        }
-
-        function renderizarDetalhesAlbum(autor, revelado) {
-            const container = document.getElementById('container-albuns');
-            const fotosDoAutor = cacheFotos.filter(f => (f.autor || "Convidado") === autor);
-
-            let html = `
-                <div class="detalhe-topo">
-                    <button class="btn-voltar" onclick="autorSelecionado = null; atualizarInterfaceGaleria();">← Voltar</button>
-                    <h3 class="titulo-album-autor">Álbum de ${autor}</h3>
-                </div>
-                <div class="grid-fotos-autor">
-            `;
-
-            fotosDoAutor.forEach((dados, index) => {
+            cacheFotosAlbum.forEach((dados, index) => {
                 const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
-                const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
-                
+                const nomeArq = `15Anos_Por_${autorSelecionado.replace(/\s+/g, '')}_${index}.jpg`;
                 const clickAcao = revelado ? `onclick="abrirLightbox('${dados.imagemTexto}')"` : '';
                 
-                html += `<div class="${classeBloqueio}" ${clickAcao}>`;
-                html += `<img src="${dados.imagemTexto}" alt="Foto">`;
-                
-                if (!revelado) {
-                    html += `
-                    <div class="lock-overlay">
-                        <svg class="lock-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                    </div>`;
-                } else {
-                    html += `
-                    <div class="foto-actions" onclick="event.stopPropagation()">
-                        <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
-                            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Baixar
-                        </button>
-                        <button class="btn-lux" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')">
-                            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> Enviar
-                        </button>
-                    </div>`;
-                }
+                html += `<div class="${classeBloqueio}" ${clickAcao}><img src="${dados.imagemTexto}">`;
+                if (!revelado) html += `<div class="lock-overlay"><svg class="lock-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>`;
+                else html += `<div class="foto-actions" onclick="event.stopPropagation()"><button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArq}')"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Baixar</button><button class="btn-lux" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArq}')"><svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> Enviar</button></div>`;
                 html += `</div>`;
             });
-
-            html += `</div>`;
-            container.innerHTML = html;
+            document.getElementById('container-albuns').innerHTML = html + `</div>`;
         }
 
-        function abrirLightbox(dataUrl) {
-            const modal = document.getElementById('lightbox-modal');
-            const img = document.getElementById('lightbox-img');
-            img.src = dataUrl;
-            modal.classList.add('active');
+        function abrirLightbox(url) { document.getElementById('lightbox-img').src = url; document.getElementById('lightbox-modal').classList.add('active'); }
+        function fecharLightbox(e) { document.getElementById('lightbox-modal').classList.remove('active'); }
+
+        function baixarFotoGaleria(url, nome) {
+            fetch(url).then(res => res.blob()).then(blob => {
+                const u = window.URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome;
+                document.body.appendChild(a); a.click(); setTimeout(() => { window.URL.revokeObjectURL(u); document.body.removeChild(a); }, 100);
+            }).catch(() => { const a = document.createElement('a'); a.href = url; a.download = nome; a.target = '_blank'; a.click(); });
         }
 
-        function fecharLightbox(event) {
-            const modal = document.getElementById('lightbox-modal');
-            modal.classList.remove('active');
-        }
-
-        function baixarFotoGaleria(dataUrl, nomeArquivo) {
-            fetch(dataUrl).then(res => res.blob()).then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url; link.download = nomeArquivo;
-                document.body.appendChild(link); link.click();
-                setTimeout(() => { window.URL.revokeObjectURL(url); document.body.removeChild(link); }, 100);
-            }).catch(() => {
-                const a = document.createElement('a'); a.href = dataUrl; a.download = nomeArquivo; a.target = '_blank'; a.click();
-            });
-        }
-
-        async function compartilharFoto(dataUrl, nomeArquivo) {
+        async function compartilharFoto(url, nome) {
             try {
-                const res = await fetch(dataUrl); const blob = await res.blob();
-                const file = new File([blob], nomeArquivo, { type: 'image/jpeg' });
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    await navigator.share({ files: [file], title: '15 Anos Ana Julia', text: 'Olha que foto sensacional da festa! ✨' });
-                } else { baixarFotoGaleria(dataUrl, nomeArquivo); }
-            } catch (error) { console.log('Compartilhamento cancelado'); }
+                const res = await fetch(url); const blob = await res.blob(); const file = new File([blob], nome, { type: 'image/jpeg' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], title: '15 Anos', text: 'Olha que foto sensacional!' }); } 
+                else { baixarFotoGaleria(url, nome); }
+            } catch (e) {}
         }
     </script>
 </body>
