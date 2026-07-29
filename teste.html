@@ -38,7 +38,6 @@
             height: 100%;
             height: 100dvh;
             background-color: var(--fundo-app);
-            /* O fundo geral foi removido daqui para ser individual em cada tela */
             font-family: 'Montserrat', sans-serif;
             color: var(--texto-principal);
             overflow: hidden;
@@ -72,7 +71,7 @@
             overflow-y: auto;
             
             /* ======== IMAGEM DE FUNDO: TELAS DE LOGIN E PAINEL ======== */
-            background-image: url('fundo_login.PNG'); /* Mude para sua imagem de login */
+            background-image: url('fundo_login.PNG'); 
             background-size: cover;
             background-position: top center;
             background-repeat: no-repeat;
@@ -84,7 +83,7 @@
             height: calc(100dvh - 75px);
             justify-content: center; 
             align-items: center;
-            background: #000; /* A câmera continua com fundo preto */
+            background: #000; 
             position: absolute;
             top: 0;
             left: 0;
@@ -97,14 +96,13 @@
             padding-bottom: 75px; 
             
             /* ======== IMAGEM DE FUNDO: TELA DE ÁLBUNS / GALERIA ======== */
-            background-image: url('fundo_album.PNG'); /* Mude para sua imagem da galeria */
+            background-image: url('fundo_album.PNG'); 
             background-size: cover;
             background-position: top center;
             background-repeat: no-repeat;
             /* =========================================================== */
         }
 
-        /* TODO O RESTANTE DO SEU CSS CONTINUA EXATAMENTE IGUAL ABAIXO... */
         .status-toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95); padding: 12px 25px; border-radius: 30px; 
@@ -315,6 +313,16 @@
         .empty-state svg { width: 50px; height: 50px; fill: #cbd5e1; }
         .empty-state p { color: var(--texto-secundario); font-size: 0.85rem; line-height: 1.5; font-weight: 600;}
 
+        /* === LOADER / SPINNER === */
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid var(--rosa-claro);
+            border-top: 4px solid var(--rosa-principal);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         /* === LIGHTBOX === */
         #lightbox-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
@@ -382,7 +390,6 @@
         }
     </style>
 </head>
-
 <body>
 
     <div id="status-toast" class="status-toast"></div>
@@ -482,10 +489,7 @@
         
         <div class="gallery-scroll-area">
             <div class="lista-albuns" id="container-albuns">
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                    <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
-                </div>
+                <!-- Estado vazio / loader inicial será injetado aqui -->
             </div>
         </div>
     </div>
@@ -528,6 +532,11 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
+        // ATIVAÇÃO DO CACHE OFFLINE (Deixa o app incrivelmente mais rápido)
+        db.enablePersistence().catch((err) => {
+            console.warn("Aviso: O cache offline não pôde ser ativado no seu navegador.", err);
+        });
+
         let nomeCompletoConvidado = "";
         let streamDeVideo = null;
         let trackDeVideo = null;
@@ -539,6 +548,11 @@
         
         let estavaBloqueado = null;
         let fazendoEfeitoSuspense = false;
+
+        // Controle Global do Banco de Dados
+        let cacheAlbuns = {}; 
+        let carregandoGaleria = true; // Impede mensagens falsas de "vazio"
+        let escutadorDeAlbuns = null;
 
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-escondido');
@@ -883,28 +897,41 @@
             if(timerInterval) { clearInterval(timerInterval); }
         }
 
-        let cacheAlbuns = {}; 
-
+        // Nova função inteligente de escuta (Substitui requisições pesadas)
         function iniciarEscutaGaleria() {
             autorSelecionado = null;
-            document.getElementById('container-albuns').innerHTML = `
-                <div class="empty-state">
-                    <p>Procurando álbuns...</p>
-                </div>`;
             
-            db.collection("album_coletivo").limit(1000).get().then((querySnapshot) => {
-                cacheAlbuns = {}; 
-                querySnapshot.forEach((doc) => {
-                    const autor = doc.data().autor || "Convidado";
-                    cacheAlbuns[autor] = (cacheAlbuns[autor] || 0) + 1; 
-                });
-                
-                if (document.getElementById('gallery-screen').classList.contains('active') && autorSelecionado === null) {
-                    atualizarInterfaceGaleria();
-                }
-            }).catch(() => {
-                mostrarAlerta("Erro ao carregar a lista de álbuns.", "Ops");
-            });
+            // Só mostra a tela de carregando se for a primeira vez
+            if (Object.keys(cacheAlbuns).length === 0 && carregandoGaleria) {
+                document.getElementById('container-albuns').innerHTML = `
+                    <div class="empty-state">
+                        <div class="spinner"></div>
+                        <p>Atualizando mural de álbuns...</p>
+                    </div>`;
+            } else {
+                atualizarInterfaceGaleria();
+            }
+
+            // Escuta as alterações em tempo real (onSnapshot) em vez de baixar tudo num clique só
+            if (!escutadorDeAlbuns) {
+                escutadorDeAlbuns = db.collection("album_coletivo").limit(1000)
+                    .onSnapshot((querySnapshot) => {
+                        carregandoGaleria = false;
+                        cacheAlbuns = {}; 
+                        
+                        querySnapshot.forEach((doc) => {
+                            const autor = doc.data().autor || "Convidado";
+                            cacheAlbuns[autor] = (cacheAlbuns[autor] || 0) + 1; 
+                        });
+                        
+                        if (document.getElementById('gallery-screen').classList.contains('active') && autorSelecionado === null) {
+                            atualizarInterfaceGaleria();
+                        }
+                    }, (error) => {
+                        carregandoGaleria = false;
+                        mostrarAlerta("Verifique sua conexão. O painel será atualizado sozinho em instantes.", "Rede Lenta");
+                    });
+            }
         }
 
         function atualizarInterfaceGaleria() {
@@ -914,12 +941,21 @@
             
             const listaDeAutores = Object.keys(cacheAlbuns);
 
+            // Bloqueia mostrar "vazio" caso ainda esteja carregando pela rede
             if (listaDeAutores.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
-                        <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
-                    </div>`;
+                if (carregandoGaleria) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="spinner"></div>
+                            <p>Sincronizando álbuns da festa...</p>
+                        </div>`;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                            <p>Nenhuma foto capturada ainda.<br>A festa espera pelo seu clique!</p>
+                        </div>`;
+                }
                 return;
             }
 
@@ -949,9 +985,11 @@
             const container = document.getElementById('container-albuns');
             container.innerHTML = `
                 <div class="empty-state">
+                    <div class="spinner"></div>
                     <p>Abrindo álbum de ${autor}...</p>
                 </div>`;
 
+            // Graças ao persist do cache offline, isso agora carrega praticamente na mesma hora
             db.collection("album_coletivo")
                 .where("autor", "==", autor)
                 .get()
