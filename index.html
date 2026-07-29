@@ -37,7 +37,15 @@
             width: 100%;
             height: 100%;
             height: 100dvh;
+            
+            /* ======== IMAGEM DE FUNDO AQUI ======== */
             background-color: var(--fundo-app);
+            background-image: url('fundo.jpg'); /* Altere 'fundo.jpg' para o nome da sua imagem ou link */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* ======================================= */
+
             font-family: 'Montserrat', sans-serif;
             color: var(--texto-principal);
             overflow: hidden;
@@ -119,11 +127,12 @@
 
         /* === TELA LOGIN VIP === */
         .login-box {
-            background: var(--branco);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--borda-sutil);
             padding: 40px 25px; border-radius: 32px;
             text-align: center; width: 90%; max-width: 380px; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             margin: auto; z-index: 10;
         }
         
@@ -224,10 +233,10 @@
         /* === TELA GALERIA === */
         .app-header-sticky {
             width: 100%; z-index: 50;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--borda-sutil);
             padding: 25px 15px 15px 15px; text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             flex-shrink: 0;
         }
         .app-header-sticky h2 { font-size: 2.3rem; margin-bottom: 6px; line-height: 1;}
@@ -241,7 +250,8 @@
         .lista-albuns { display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 500px; }
         
         .album-card {
-            background: var(--branco);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border: 1px solid var(--borda-sutil);
             border-radius: 20px; padding: 20px 22px; display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; box-shadow: var(--sombra-card); transition: transform 0.2s;
@@ -254,18 +264,18 @@
 
         .detalhe-topo { display: flex; align-items: center; margin-bottom: 20px; width: 100%; gap: 15px; }
         .btn-voltar {
-            background: var(--branco); border: 1px solid var(--borda-sutil); color: var(--texto-principal);
+            background: rgba(255, 255, 255, 0.95); border: 1px solid var(--borda-sutil); color: var(--texto-principal);
             padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-family: 'Montserrat', sans-serif;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); backdrop-filter: blur(10px);
         }
         
-        .titulo-album-autor { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--texto-principal); }
+        .titulo-album-autor { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--branco); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
 
         .grid-fotos-autor { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 500px; }
         
         .foto-card {
             position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 16px; overflow: hidden; 
-            background: #e2e8f0; border: 1px solid var(--borda-sutil); box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: #e2e8f0; border: 1px solid var(--borda-sutil); box-shadow: 0 8px 20px rgba(0,0,0,0.2);
             display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer;
         }
         .foto-card img { 
@@ -293,9 +303,9 @@
         }
         .btn-lux svg { width: 12px; height: 12px; fill: currentColor; }
 
-        .empty-state { text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 12px;}
+        .empty-state { text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 20px;}
         .empty-state svg { width: 50px; height: 50px; fill: #cbd5e1; }
-        .empty-state p { color: var(--texto-secundario); font-size: 0.85rem; line-height: 1.5; }
+        .empty-state p { color: var(--texto-secundario); font-size: 0.85rem; line-height: 1.5; font-weight: 600;}
 
         /* === LIGHTBOX === */
         #lightbox-modal {
@@ -824,7 +834,6 @@
                             overlay.style.display = 'none';
                             fazendoEfeitoSuspense = false;
                             
-                            // Depois do suspense, recarrega a tela correta onde ele estiver
                             if (autorSelecionado) {
                                 carregarFotosDoAutor(autorSelecionado, checarRevelacao());
                             } else {
@@ -849,7 +858,6 @@
                     if (estavaBloqueado === true && reveladoAgora === true && !fazendoEfeitoSuspense) {
                         dispararEfeitoSuspense();
                     } else if (reveladoAgora && document.querySelector('.foto-card.bloqueada') && !fazendoEfeitoSuspense) {
-                        // Atualiza direto dependendo se ele tá na lista de álbuns ou dentro de um
                         if (autorSelecionado) {
                             carregarFotosDoAutor(autorSelecionado, reveladoAgora);
                         } else {
@@ -866,12 +874,7 @@
             if(timerInterval) { clearInterval(timerInterval); }
         }
 
-
-        // =========================================================================
-        // NOVA ARQUITETURA: LÓGICA DE ÁLBUNS E FOTOS TOTALMENTE SEPARADAS
-        // =========================================================================
-        
-        let cacheAlbuns = {}; // Guarda apenas os nomes e a quantidade (leve)
+        let cacheAlbuns = {}; 
 
         function iniciarEscutaGaleria() {
             autorSelecionado = null;
@@ -880,12 +883,11 @@
                     <p>Procurando álbuns...</p>
                 </div>`;
             
-            // 1. Busca os álbuns da festa primeiro (Limita em 1000 para proteger de travamentos absolutos, mas pega todos da festa de sobra)
             db.collection("album_coletivo").limit(1000).get().then((querySnapshot) => {
                 cacheAlbuns = {}; 
                 querySnapshot.forEach((doc) => {
                     const autor = doc.data().autor || "Convidado";
-                    cacheAlbuns[autor] = (cacheAlbuns[autor] || 0) + 1; // Conta +1 pra esse autor
+                    cacheAlbuns[autor] = (cacheAlbuns[autor] || 0) + 1; 
                 });
                 
                 if (document.getElementById('gallery-screen').classList.contains('active') && autorSelecionado === null) {
@@ -912,7 +914,6 @@
                 return;
             }
 
-            // GERA A INTERFACE PARA TODOS OS ÁLBUNS IMEDIATAMENTE (SEM ROLAR)
             listaDeAutores.forEach(autor => {
                 const qtdFotos = cacheAlbuns[autor];
                 const card = document.createElement('div');
@@ -934,8 +935,6 @@
             });
         }
 
-
-        // 2. FUNÇÃO NOVA: Baixa as fotos SÓ da pessoa que você clicou no álbum
         function carregarFotosDoAutor(autor, revelado) {
             autorSelecionado = autor;
             const container = document.getElementById('container-albuns');
@@ -951,14 +950,12 @@
                     let fotos = [];
                     snap.forEach(doc => fotos.push(doc.data()));
                     
-                    // Ordena as fotos da mais recente pra mais velha no próprio celular (evita erro de Index no Firebase)
                     fotos.sort((a, b) => {
                         let timeA = (a.timestamp && typeof a.timestamp.toMillis === 'function') ? a.timestamp.toMillis() : Date.now();
                         let timeB = (b.timestamp && typeof b.timestamp.toMillis === 'function') ? b.timestamp.toMillis() : Date.now();
                         return timeB - timeA;
                     });
                     
-                    // Checa se o usuário não fechou o álbum enquanto carregava
                     if (autorSelecionado === autor) {
                         renderizarDetalhesAlbum(autor, fotos, revelado);
                     }
@@ -970,8 +967,6 @@
                 });
         }
 
-
-        // 3. Renderiza apenas as fotos que foram carregadas para o autor específico
         function renderizarDetalhesAlbum(autor, fotosDoAutor, revelado) {
             const container = document.getElementById('container-albuns');
             
