@@ -823,7 +823,13 @@
                         setTimeout(() => {
                             overlay.style.display = 'none';
                             fazendoEfeitoSuspense = false;
-                            atualizarInterfaceGaleria();
+                            
+                            // Depois do suspense, recarrega a tela correta onde ele estiver
+                            if (autorSelecionado) {
+                                carregarFotosDoAutor(autorSelecionado, checarRevelacao());
+                            } else {
+                                atualizarInterfaceGaleria();
+                            }
                         }, 800);
                     }, 800);
                 }
@@ -843,7 +849,12 @@
                     if (estavaBloqueado === true && reveladoAgora === true && !fazendoEfeitoSuspense) {
                         dispararEfeitoSuspense();
                     } else if (reveladoAgora && document.querySelector('.foto-card.bloqueada') && !fazendoEfeitoSuspense) {
-                        atualizarInterfaceGaleria();
+                        // Atualiza direto dependendo se ele tá na lista de álbuns ou dentro de um
+                        if (autorSelecionado) {
+                            carregarFotosDoAutor(autorSelecionado, reveladoAgora);
+                        } else {
+                            atualizarInterfaceGaleria();
+                        }
                     }
                     
                     estavaBloqueado = !reveladoAgora;
@@ -855,85 +866,44 @@
             if(timerInterval) { clearInterval(timerInterval); }
         }
 
-        let cacheFotos = [];
-        let contagensTotais = {}; // Armazena a contagem verdadeira de cada pessoa
-        let lastVisible = null;
-        let carregandoMais = false;
-        let temMaisFotos = true;
+
+        // =========================================================================
+        // NOVA ARQUITETURA: LÓGICA DE ÁLBUNS E FOTOS TOTALMENTE SEPARADAS
+        // =========================================================================
+        
+        let cacheAlbuns = {}; // Guarda apenas os nomes e a quantidade (leve)
 
         function iniciarEscutaGaleria() {
-            cacheFotos = [];
-            contagensTotais = {}; // Zera as contagens para garantir que busque os dados mais frescos
-            lastVisible = null;
-            temMaisFotos = true;
+            autorSelecionado = null;
             document.getElementById('container-albuns').innerHTML = `
                 <div class="empty-state">
-                    <p>Carregando álbuns...</p>
+                    <p>Procurando álbuns...</p>
                 </div>`;
-            carregarPrimeiraPagina();
-        }
-
-        // A TRAVA VOLTOU PARA O SEU BANCO DE DADOS NÃO TRAVAR
-        function carregarPrimeiraPagina() {
-            db.collection("album_coletivo")
-                .orderBy("timestamp", "desc")
-                .limit(30)
-                .get()
-                .then((querySnapshot) => {
-                    cacheFotos = []; 
-                    if (!querySnapshot.empty) {
-                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
-                    }
-                    if(document.getElementById('gallery-screen').classList.contains('active')) {
-                        atualizarInterfaceGaleria();
-                    }
+            
+            // 1. Busca os álbuns da festa primeiro (Limita em 1000 para proteger de travamentos absolutos, mas pega todos da festa de sobra)
+            db.collection("album_coletivo").limit(1000).get().then((querySnapshot) => {
+                cacheAlbuns = {}; 
+                querySnapshot.forEach((doc) => {
+                    const autor = doc.data().autor || "Convidado";
+                    cacheAlbuns[autor] = (cacheAlbuns[autor] || 0) + 1; // Conta +1 pra esse autor
                 });
+                
+                if (document.getElementById('gallery-screen').classList.contains('active') && autorSelecionado === null) {
+                    atualizarInterfaceGaleria();
+                }
+            }).catch(() => {
+                mostrarAlerta("Erro ao carregar a lista de álbuns.", "Ops");
+            });
         }
-
-        function carregarMaisFotos() {
-            if (carregandoMais || !temMaisFotos || !lastVisible) return;
-            carregandoMais = true;
-
-            db.collection("album_coletivo")
-                .orderBy("timestamp", "desc")
-                .startAfter(lastVisible)
-                .limit(30)
-                .get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-                        querySnapshot.forEach((doc) => { cacheFotos.push(doc.data()); });
-                        if(document.getElementById('gallery-screen').classList.contains('active')) {
-                            atualizarInterfaceGaleria();
-                        }
-                    } else {
-                        temMaisFotos = false;
-                    }
-                    carregandoMais = false;
-                })
-                .catch(() => {
-                    carregandoMais = false;
-                });
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const scrollArea = document.querySelector('.gallery-scroll-area');
-            if (scrollArea) {
-                scrollArea.addEventListener('scroll', () => {
-                    if (scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 150) {
-                        carregarMaisFotos();
-                    }
-                });
-            }
-        });
 
         function atualizarInterfaceGaleria() {
             const revelado = checarRevelacao();
             const container = document.getElementById('container-albuns');
             container.innerHTML = ''; 
             
-            if (cacheFotos.length === 0) {
+            const listaDeAutores = Object.keys(cacheAlbuns);
+
+            if (listaDeAutores.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
                         <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
@@ -942,68 +912,69 @@
                 return;
             }
 
-            if (autorSelecionado !== null) {
-                renderizarDetalhesAlbum(autorSelecionado, revelado);
-                return;
-            }
-
-            const albunsPorAutor = {};
-            cacheFotos.forEach(foto => {
-                const autor = foto.autor || "Convidado";
-                if (!albunsPorAutor[autor]) {
-                    albunsPorAutor[autor] = [];
-                }
-                albunsPorAutor[autor].push(foto);
-            });
-
-            // GERA A INTERFACE PARA CADA ÁLBUM
-            for (const [autor, fotos] of Object.entries(albunsPorAutor)) {
+            // GERA A INTERFACE PARA TODOS OS ÁLBUNS IMEDIATAMENTE (SEM ROLAR)
+            listaDeAutores.forEach(autor => {
+                const qtdFotos = cacheAlbuns[autor];
                 const card = document.createElement('div');
                 card.className = 'album-card';
-                card.onclick = () => { autorSelecionado = autor; atualizarInterfaceGaleria(); };
+                card.onclick = () => { carregarFotosDoAutor(autor, checarRevelacao()); };
                 
                 const iconeSvg = revelado 
                     ? '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>'
                     : '<svg class="album-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
 
-                // ID único para atualizar só o textinho do número sem piscar a tela inteira
-                const idContador = `contador-${autor.replace(/[^a-zA-Z0-9]/g, '')}`;
-                
-                let textoContagem = "...";
-                if (contagensTotais[autor] !== undefined) {
-                    textoContagem = `${contagensTotais[autor]} ${contagensTotais[autor] === 1 ? 'foto registrada' : 'fotos registradas'}`;
-                }
-
                 card.innerHTML = `
                     <div class="album-info">
                         <h3>Álbum de ${autor}</h3>
-                        <p id="${idContador}">${textoContagem}</p>
+                        <p>${qtdFotos} ${qtdFotos === 1 ? 'foto registrada' : 'fotos registradas'}</p>
                     </div>
                     <div>${iconeSvg}</div>
                 `;
                 container.appendChild(card);
-
-                // O CÓDIGO CORRIGIDO ESTÁ AQUI: Pede o número real sem quebrar o laço
-                if (contagensTotais[autor] === undefined) {
-                    db.collection("album_coletivo").where("autor", "==", autor).get().then(snap => {
-                        const totalReal = snap.size; // Usa o size nativo
-                        contagensTotais[autor] = totalReal;
-                        
-                        const el = document.getElementById(idContador);
-                        if (el) el.innerText = `${totalReal} ${totalReal === 1 ? 'foto registrada' : 'fotos registradas'}`;
-                    }).catch(() => {
-                        contagensTotais[autor] = fotos.length;
-                        const el = document.getElementById(idContador);
-                        if (el) el.innerText = `${fotos.length} ${fotos.length === 1 ? 'foto registrada' : 'fotos registradas'}`;
-                    });
-                }
-            }
+            });
         }
 
-        function renderizarDetalhesAlbum(autor, revelado) {
-            const container = document.getElementById('container-albuns');
-            const fotosDoAutor = cacheFotos.filter(f => (f.autor || "Convidado") === autor);
 
+        // 2. FUNÇÃO NOVA: Baixa as fotos SÓ da pessoa que você clicou no álbum
+        function carregarFotosDoAutor(autor, revelado) {
+            autorSelecionado = autor;
+            const container = document.getElementById('container-albuns');
+            container.innerHTML = `
+                <div class="empty-state">
+                    <p>Abrindo álbum de ${autor}...</p>
+                </div>`;
+
+            db.collection("album_coletivo")
+                .where("autor", "==", autor)
+                .get()
+                .then(snap => {
+                    let fotos = [];
+                    snap.forEach(doc => fotos.push(doc.data()));
+                    
+                    // Ordena as fotos da mais recente pra mais velha no próprio celular (evita erro de Index no Firebase)
+                    fotos.sort((a, b) => {
+                        let timeA = (a.timestamp && typeof a.timestamp.toMillis === 'function') ? a.timestamp.toMillis() : Date.now();
+                        let timeB = (b.timestamp && typeof b.timestamp.toMillis === 'function') ? b.timestamp.toMillis() : Date.now();
+                        return timeB - timeA;
+                    });
+                    
+                    // Checa se o usuário não fechou o álbum enquanto carregava
+                    if (autorSelecionado === autor) {
+                        renderizarDetalhesAlbum(autor, fotos, revelado);
+                    }
+                })
+                .catch(() => {
+                    mostrarAlerta("Não foi possível carregar as fotos deste álbum.", "Erro");
+                    autorSelecionado = null;
+                    atualizarInterfaceGaleria();
+                });
+        }
+
+
+        // 3. Renderiza apenas as fotos que foram carregadas para o autor específico
+        function renderizarDetalhesAlbum(autor, fotosDoAutor, revelado) {
+            const container = document.getElementById('container-albuns');
+            
             let html = `
                 <div class="detalhe-topo">
                     <button class="btn-voltar" onclick="autorSelecionado = null; atualizarInterfaceGaleria();">← Voltar</button>
@@ -1012,33 +983,36 @@
                 <div class="grid-fotos-autor">
             `;
 
-            fotosDoAutor.forEach((dados, index) => {
-                const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
-                const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
-                
-                const clickAcao = revelado ? `onclick="abrirLightbox('${dados.imagemTexto}')"` : '';
-                
-                html += `<div class="${classeBloqueio}" ${clickAcao}>`;
-                html += `<img src="${dados.imagemTexto}" alt="Foto">`;
-                
-                if (!revelado) {
-                    html += `
-                    <div class="lock-overlay">
-                        <svg class="lock-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                    </div>`;
-                } else {
-                    html += `
-                    <div class="foto-actions" onclick="event.stopPropagation()">
-                        <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
-                            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Baixar
-                        </button>
-                        <button class="btn-lux" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')">
-                            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> Enviar
-                        </button>
-                    </div>`;
-                }
-                html += `</div>`;
-            });
+            if (fotosDoAutor.length === 0) {
+                html += `<p style="text-align:center; width:100%; color:var(--texto-secundario); margin-top:20px;">Nenhuma foto encontrada.</p>`;
+            } else {
+                fotosDoAutor.forEach((dados, index) => {
+                    const classeBloqueio = revelado ? 'foto-card' : 'foto-card bloqueada';
+                    const nomeArquivo = `15Anos_Por_${autor.replace(/\s+/g, '')}_${index}.jpg`;
+                    const clickAcao = revelado ? `onclick="abrirLightbox('${dados.imagemTexto}')"` : '';
+                    
+                    html += `<div class="${classeBloqueio}" ${clickAcao}>`;
+                    html += `<img src="${dados.imagemTexto}" alt="Foto">`;
+                    
+                    if (!revelado) {
+                        html += `
+                        <div class="lock-overlay">
+                            <svg class="lock-icon-svg" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                        </div>`;
+                    } else {
+                        html += `
+                        <div class="foto-actions" onclick="event.stopPropagation()">
+                            <button class="btn-lux" onclick="baixarFotoGaleria('${dados.imagemTexto}', '${nomeArquivo}')">
+                                <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Baixar
+                            </button>
+                            <button class="btn-lux" onclick="compartilharFoto('${dados.imagemTexto}', '${nomeArquivo}')">
+                                <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg> Enviar
+                            </button>
+                        </div>`;
+                    }
+                    html += `</div>`;
+                });
+            }
 
             html += `</div>`;
             container.innerHTML = html;
