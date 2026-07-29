@@ -37,15 +37,8 @@
             width: 100%;
             height: 100%;
             height: 100dvh;
-            
-            /* ======== IMAGEM DE FUNDO AQUI ======== */
             background-color: var(--fundo-app);
-            background-image: url('fundo.PNG'); /* Altere 'fundo.jpg' para o nome da sua imagem ou link */
-            background-size: cover;
-            background-position: top center;
-            background-repeat: no-repeat;
-            /* ======================================= */
-
+            /* O fundo geral foi removido daqui para ser individual em cada tela */
             font-family: 'Montserrat', sans-serif;
             color: var(--texto-principal);
             overflow: hidden;
@@ -77,6 +70,13 @@
             align-items: center;
             padding: 20px;
             overflow-y: auto;
+            
+            /* ======== IMAGEM DE FUNDO: TELAS DE LOGIN E PAINEL ======== */
+            background-image: url('fundo_login.PNG'); /* Mude para sua imagem de login */
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            /* ============================================================ */
         }
 
         #camera-screen.active { 
@@ -84,7 +84,7 @@
             height: calc(100dvh - 75px);
             justify-content: center; 
             align-items: center;
-            background: #000; 
+            background: #000; /* A câmera continua com fundo preto */
             position: absolute;
             top: 0;
             left: 0;
@@ -95,8 +95,16 @@
             height: 100dvh;
             justify-content: flex-start;
             padding-bottom: 75px; 
+            
+            /* ======== IMAGEM DE FUNDO: TELA DE ÁLBUNS / GALERIA ======== */
+            background-image: url('fundo_album.PNG'); /* Mude para sua imagem da galeria */
+            background-size: cover;
+            background-position: top center;
+            background-repeat: no-repeat;
+            /* =========================================================== */
         }
 
+        /* TODO O RESTANTE DO SEU CSS CONTINUA EXATAMENTE IGUAL ABAIXO... */
         .status-toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95); padding: 12px 25px; border-radius: 30px; 
@@ -374,6 +382,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <div id="status-toast" class="status-toast"></div>
